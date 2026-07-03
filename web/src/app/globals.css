@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+/* ============================================================
+   AEGIS design system — "threat intelligence console"
+   Deep near-black canvas, hairline glass panels, violet→cyan
+   brand light, precise typography. Dark-first.
+   ============================================================ */
+
+@theme {
+  --color-canvas: #07070b;
+  --color-surface: #0d0d13;
+  --color-surface-2: #111119;
+  --color-elevated: #16161f;
+  --color-line: rgba(255, 255, 255, 0.07);
+  --color-line-strong: rgba(255, 255, 255, 0.12);
+
+  --color-ink: #ecedf2;
+  --color-ink-soft: #b7b8c4;
+  --color-muted: #7b7c8c;
+
+  --color-brand: #7c5cff;
+  --color-brand-2: #22d3ee;
+
+  --color-critical: #ff4d5e;
+  --color-high: #ff8a34;
+  --color-suspicious: #ffc53d;
+  --color-low: #2ee6a6;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  --radius-panel: 14px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.011em;
+  }
+  /* Aurora backdrop — subtle brand light behind everything. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 40rem at 12% -8%, rgba(124, 92, 255, 0.16), transparent 60%),
+      radial-gradient(50rem 34rem at 100% 0%, rgba(34, 211, 238, 0.09), transparent 55%),
+      radial-gradient(40rem 40rem at 50% 120%, rgba(124, 92, 255, 0.06), transparent 60%);
+  }
+  ::selection {
+    background: rgba(124, 92, 255, 0.32);
+    color: #fff;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.09);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.16);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .panel {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0)),
+      var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-panel);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.03) inset,
+      0 20px 40px -24px rgba(0, 0, 0, 0.8);
+  }
+  .panel-hover {
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .panel-hover:hover {
+    border-color: var(--color-line-strong);
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 30px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--color-ink-soft);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "ss01";
+  }
+
+  .grad-text {
+    background: linear-gradient(92deg, #fff 0%, #cbb8ff 45%, #8fe9ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .grid-faint {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 30%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(70% 60% at 50% 30%, #000 30%, transparent 100%);
+  }
+
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-canvas), 0 0 0 4px rgba(124, 92, 255, 0.6);
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* React Flow theme overrides */
+.react-flow__attribution {
+  display: none;
+}
+.react-flow__edge-text {
+  fill: var(--color-muted);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+.react-flow__handle {
+  opacity: 0;
+}

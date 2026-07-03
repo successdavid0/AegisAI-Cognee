@@ -1,0 +1,35 @@
+[
+  {
+    "id": "ent_domain_1", "entity_type": "domain", "value": "uniswap-airdrop-claim.io",
+    "chain": null, "status": "verified", "risk_label": "Critical", "risk_score": 92,
+    "confidence": 0.94, "cluster_id": "cluster_1", "first_seen": "2026-06-21"
+  },
+  {
+    "id": "ent_wallet_1", "entity_type": "wallet",
+    "value": "0x9a1f2c3d4e5f60718293a4b5c6d7e8f901234567",
+    "chain": "ethereum", "status": "verified", "risk_label": "Critical", "risk_score": 88,
+    "confidence": 0.9, "cluster_id": "cluster_1", "first_seen": "2026-06-18"
+  },
+  {
+    "id": "ent_handle_1", "entity_type": "handle", "value": "@uniswap_airdrop_support",
+    "chain": null, "status": "verified", "risk_label": "High Risk", "risk_score": 74,
+    "confidence": 0.82, "cluster_id": "cluster_1", "first_seen": "2026-06-22"
+  },
+  {
+    "id": "ent_contract_1", "entity_type": "contract",
+    "value": "0xdead1111beef2222cafe3333f00d4444abad5555",
+    "chain": "ethereum", "status": "verified", "risk_label": "High Risk", "risk_score": 71,
+    "confidence": 0.78, "cluster_id": "cluster_1", "first_seen": "2026-06-19"
+  },
+  {
+    "id": "ent_domain_2", "entity_type": "domain", "value": "metamask-wallet-verify.com",
+    "chain": null, "status": "pending", "risk_label": "Suspicious", "risk_score": 48,
+    "confidence": 0.6, "cluster_id": null, "first_seen": "2026-06-28"
+  },
+  {
+    "id": "ent_wallet_fp", "entity_type": "wallet",
+    "value": "0xabc0000000000000000000000000000000000001",
+    "chain": "ethereum", "status": "cleared", "risk_label": "Low Risk", "risk_score": 10,
+    "confidence": 0.3, "cluster_id": null, "first_seen": "2026-06-10"
+  }
+]

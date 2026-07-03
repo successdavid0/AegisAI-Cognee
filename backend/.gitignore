@@ -1,0 +1,17 @@
+# Secrets — never commit the real .env (keep .env.example only)
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local database
+*.db
+*.sqlite3
+
+# Logs
+*.log

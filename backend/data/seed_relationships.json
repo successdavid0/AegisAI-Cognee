@@ -1,0 +1,8 @@
+[
+  { "from": "ent_domain_1", "to": "ent_wallet_1", "relationship_type": "drains_to", "confidence": 0.9 },
+  { "from": "ent_domain_1", "to": "ent_handle_1", "relationship_type": "promoted_by", "confidence": 0.85 },
+  { "from": "ent_domain_1", "to": "ent_contract_1", "relationship_type": "deploys", "confidence": 0.8 },
+  { "from": "ent_handle_1", "to": "ent_wallet_1", "relationship_type": "shares_wallet", "confidence": 0.7 },
+  { "from": "ent_contract_1", "to": "ent_wallet_1", "relationship_type": "owned_by", "confidence": 0.75 },
+  { "from": "ent_domain_2", "to": "ent_domain_1", "relationship_type": "similar_kit", "confidence": 0.6 }
+]
