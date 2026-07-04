@@ -65,6 +65,11 @@ async def _remember_text(text: str, node_set: str, dataset: str = DATASET) -> di
 
 
 # ---- Public wrapper API (Backend Spec §9) ----
+async def remember_note(text: str, node_set: str = "threat_intel", dataset: str = DATASET) -> dict:
+    """Store a free-text memory note (used by the seed-ingestion script)."""
+    return await _remember_text(text, node_set, dataset)
+
+
 async def remember_memory(payload: dict, dataset: str = DATASET) -> dict:
     """Store scam evidence / report / relationship / scan / correction."""
     node_set = str(payload.get("type", "memory"))
@@ -119,8 +124,8 @@ def _payload_to_text(payload: dict) -> str:
     t = payload.get("type")
     if t == "scan_event":
         return (
-            f"Scan of {payload.get('value')} returned risk "
-            f"{payload.get('risk_label')} ({payload.get('risk_score')}/100)."
+            f"Scan of {payload.get('value')} returned verdict "
+            f"{payload.get('risk_label')} (safety {payload.get('risk_score')}/100)."
         )
     if t == "report":
         return (

@@ -92,7 +92,7 @@ export default function EntityDetailPage() {
                   <div className="text-4xl font-bold" style={{ color }}>
                     {e.risk_score}
                   </div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted">/ 100 risk</div>
+                  <div className="text-[11px] uppercase tracking-wider text-muted">/ 100 trust</div>
                 </div>
               )}
             </div>

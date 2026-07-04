@@ -1,0 +1,252 @@
+[
+  {
+    "entity_value": "claim-okx-reward-demo.com",
+    "entity_type": "domain",
+    "scam_type": "fake_airdrop",
+    "description": "Reported phishing page for Fake OKX Airdrop.",
+    "evidence": "Reported phishing page for Fake OKX Airdrop.",
+    "source": "chainabuse",
+    "confidence": 0.9,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0xf2d9cb49530e0238e63b3d86de588beb9b9fbb84",
+    "entity_type": "wallet",
+    "scam_type": "fake_airdrop",
+    "description": "Wallet received victim funds from this campaign.",
+    "evidence": "Wallet received victim funds from this campaign.",
+    "source": "internal",
+    "confidence": 0.88,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0xf2d9cb49530e0238e63b3d86de588beb9b9fbb84",
+    "entity_type": "wallet",
+    "scam_type": "fake_airdrop",
+    "description": "Second independent report of the same drainer wallet.",
+    "evidence": "Second independent report of the same drainer wallet.",
+    "source": "community",
+    "confidence": 0.8,
+    "status": "pending"
+  },
+  {
+    "entity_value": "@okx_support_bonus",
+    "entity_type": "handle",
+    "scam_type": "impersonation",
+    "description": "Fake support handle DMing victims.",
+    "evidence": "Fake support handle DMing victims.",
+    "source": "community",
+    "confidence": 0.72,
+    "status": "pending"
+  },
+  {
+    "entity_value": "binance-wallet-verify-demo.com",
+    "entity_type": "domain",
+    "scam_type": "phishing",
+    "description": "Reported phishing page for Fake Binance Support.",
+    "evidence": "Reported phishing page for Fake Binance Support.",
+    "source": "cryptoscamdb",
+    "confidence": 0.9,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0x9cd476d3d9ef20518f089466ebc1348796c3f288",
+    "entity_type": "wallet",
+    "scam_type": "phishing",
+    "description": "Wallet received victim funds from this campaign.",
+    "evidence": "Wallet received victim funds from this campaign.",
+    "source": "internal",
+    "confidence": 0.88,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0x9cd476d3d9ef20518f089466ebc1348796c3f288",
+    "entity_type": "wallet",
+    "scam_type": "phishing",
+    "description": "Second independent report of the same drainer wallet.",
+    "evidence": "Second independent report of the same drainer wallet.",
+    "source": "community",
+    "confidence": 0.8,
+    "status": "pending"
+  },
+  {
+    "entity_value": "@binance_helpdesk_airdrop",
+    "entity_type": "handle",
+    "scam_type": "impersonation",
+    "description": "Fake support handle DMing victims.",
+    "evidence": "Fake support handle DMing victims.",
+    "source": "community",
+    "confidence": 0.72,
+    "status": "pending"
+  },
+  {
+    "entity_value": "wa-invest-demo.com",
+    "entity_type": "domain",
+    "scam_type": "investment_scam",
+    "description": "Reported phishing page for WhatsApp Investment Scam.",
+    "evidence": "Reported phishing page for WhatsApp Investment Scam.",
+    "source": "community",
+    "confidence": 0.9,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0xf04b9f34909ead85d7664e7d04586d44993f4741",
+    "entity_type": "wallet",
+    "scam_type": "investment_scam",
+    "description": "Wallet received victim funds from this campaign.",
+    "evidence": "Wallet received victim funds from this campaign.",
+    "source": "internal",
+    "confidence": 0.88,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0xf04b9f34909ead85d7664e7d04586d44993f4741",
+    "entity_type": "wallet",
+    "scam_type": "investment_scam",
+    "description": "Second independent report of the same drainer wallet.",
+    "evidence": "Second independent report of the same drainer wallet.",
+    "source": "community",
+    "confidence": 0.8,
+    "status": "pending"
+  },
+  {
+    "entity_value": "@wa_invest_admin",
+    "entity_type": "handle",
+    "scam_type": "impersonation",
+    "description": "Fake support handle DMing victims.",
+    "evidence": "Fake support handle DMing victims.",
+    "source": "community",
+    "confidence": 0.72,
+    "status": "pending"
+  },
+  {
+    "entity_value": "rugpull-demo-token.com",
+    "entity_type": "domain",
+    "scam_type": "rug_pull",
+    "description": "Reported phishing page for Rug Pull Token.",
+    "evidence": "Reported phishing page for Rug Pull Token.",
+    "source": "chainabuse",
+    "confidence": 0.9,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0xc851610c6222580276e3bc76ba5a512bf973a324",
+    "entity_type": "wallet",
+    "scam_type": "rug_pull",
+    "description": "Wallet received victim funds from this campaign.",
+    "evidence": "Wallet received victim funds from this campaign.",
+    "source": "internal",
+    "confidence": 0.88,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0xc851610c6222580276e3bc76ba5a512bf973a324",
+    "entity_type": "wallet",
+    "scam_type": "rug_pull",
+    "description": "Second independent report of the same drainer wallet.",
+    "evidence": "Second independent report of the same drainer wallet.",
+    "source": "community",
+    "confidence": 0.8,
+    "status": "pending"
+  },
+  {
+    "entity_value": "@moonsafe_official",
+    "entity_type": "handle",
+    "scam_type": "impersonation",
+    "description": "Fake support handle DMing victims.",
+    "evidence": "Fake support handle DMing victims.",
+    "source": "community",
+    "confidence": 0.72,
+    "status": "pending"
+  },
+  {
+    "entity_value": "metamask-wallet-verify.com",
+    "entity_type": "domain",
+    "scam_type": "phishing",
+    "description": "Reported phishing page for Fake MetaMask Verification.",
+    "evidence": "Reported phishing page for Fake MetaMask Verification.",
+    "source": "phishtank",
+    "confidence": 0.9,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0x9bfbb456371842a468377573756f05f8b172f08e",
+    "entity_type": "wallet",
+    "scam_type": "phishing",
+    "description": "Wallet received victim funds from this campaign.",
+    "evidence": "Wallet received victim funds from this campaign.",
+    "source": "internal",
+    "confidence": 0.88,
+    "status": "verified"
+  },
+  {
+    "entity_value": "0x9bfbb456371842a468377573756f05f8b172f08e",
+    "entity_type": "wallet",
+    "scam_type": "phishing",
+    "description": "Second independent report of the same drainer wallet.",
+    "evidence": "Second independent report of the same drainer wallet.",
+    "source": "community",
+    "confidence": 0.8,
+    "status": "pending"
+  },
+  {
+    "entity_value": "@metamask_supporthelp",
+    "entity_type": "handle",
+    "scam_type": "impersonation",
+    "description": "Fake support handle DMing victims.",
+    "evidence": "Fake support handle DMing victims.",
+    "source": "community",
+    "confidence": 0.72,
+    "status": "pending"
+  },
+  {
+    "entity_value": "0x18a7fcccf0169b857cc074d11c7a8cd820dd0758",
+    "entity_type": "wallet",
+    "scam_type": "other",
+    "description": "Initially reported as a scam wallet.",
+    "evidence": "Initially reported as a scam wallet.",
+    "source": "community",
+    "confidence": 0.55,
+    "status": "pending"
+  },
+  {
+    "entity_value": "0x7f2ca52f03677eb4a071491929681db6079ac002",
+    "entity_type": "wallet",
+    "scam_type": "other",
+    "description": "Initially reported as a scam wallet.",
+    "evidence": "Initially reported as a scam wallet.",
+    "source": "community",
+    "confidence": 0.55,
+    "status": "pending"
+  },
+  {
+    "entity_value": "0xa99c935f4d49b19c6a3b7833a079012a21052d78",
+    "entity_type": "wallet",
+    "scam_type": "other",
+    "description": "Initially reported as a scam wallet.",
+    "evidence": "Initially reported as a scam wallet.",
+    "source": "community",
+    "confidence": 0.55,
+    "status": "pending"
+  },
+  {
+    "entity_value": "0x481f037d343c5765ee627668d8362d253844e114",
+    "entity_type": "wallet",
+    "scam_type": "other",
+    "description": "Initially reported as a scam wallet.",
+    "evidence": "Initially reported as a scam wallet.",
+    "source": "community",
+    "confidence": 0.55,
+    "status": "pending"
+  },
+  {
+    "entity_value": "0x349db48dd44117b94b2c769261c0a9a13afca96f",
+    "entity_type": "wallet",
+    "scam_type": "other",
+    "description": "Initially reported as a scam wallet.",
+    "evidence": "Initially reported as a scam wallet.",
+    "source": "community",
+    "confidence": 0.55,
+    "status": "pending"
+  }
+]

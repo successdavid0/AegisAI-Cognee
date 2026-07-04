@@ -150,6 +150,18 @@
   animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Bouncing AEGIS wordmark — elegant, not cartoonish */
+@keyframes aegis-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+.animate-aegis-bounce {
+  animation: aegis-bounce 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-aegis-bounce { animation: none; }
+}
+
 /* React Flow theme overrides */
 .react-flow__attribution {
   display: none;

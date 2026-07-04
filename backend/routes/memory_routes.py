@@ -9,9 +9,13 @@ import models
 import schemas
 from database import get_db
 from services import cognee_service
+from services.auth import require_admin
 from services.common import log_memory_event, memory_event_out
 
 router = APIRouter(tags=["memory"])
+
+# Memory mutations (improve/forget) require the admin key; GET lifecycle is public.
+admin_auth = Depends(require_admin)
 
 
 @router.get("/memory/lifecycle/{scan_id}", response_model=schemas.Lifecycle)
@@ -26,7 +30,7 @@ def lifecycle(scan_id: str, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/memory/improve", response_model=schemas.OpAck)
+@router.post("/memory/improve", response_model=schemas.OpAck, dependencies=[admin_auth])
 async def improve(db: Session = Depends(get_db)):
     result = await cognee_service.improve_memory()
     note = "" if result.get("ok") else " (Cognee improve degraded; local enrichment applied)"
@@ -63,7 +67,7 @@ async def improve(db: Session = Depends(get_db)):
     )
 
 
-@router.post("/memory/forget", response_model=schemas.OpAck)
+@router.post("/memory/forget", response_model=schemas.OpAck, dependencies=[admin_auth])
 async def forget(req: schemas.ForgetRequest, db: Session = Depends(get_db)):
     target_value = "the affected claim"
     old_status = None

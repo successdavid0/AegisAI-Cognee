@@ -9,11 +9,15 @@ import models
 import schemas
 from database import get_db
 from services import cognee_service
+from services.auth import require_admin
 from services.common import log_memory_event, memory_event_out, report_out
 from services.report_service import set_status
 from services.risk_engine import calculate_risk
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+# Mutating admin actions require the admin key; GET /reports stays public.
+admin_auth = Depends(require_admin)
 
 
 @router.get("/reports", response_model=list[schemas.ReportOut])
@@ -31,7 +35,8 @@ def _get_report(db: Session, report_id: str) -> models.Report:
     return report
 
 
-@router.post("/reports/{report_id}/verify", response_model=schemas.AdminActionAck)
+@router.post("/reports/{report_id}/verify", response_model=schemas.AdminActionAck,
+             dependencies=[admin_auth])
 def verify(report_id: str, db: Session = Depends(get_db)):
     report = _get_report(db, report_id)
     set_status(db, report, "verified")
@@ -48,7 +53,8 @@ def verify(report_id: str, db: Session = Depends(get_db)):
     return schemas.AdminActionAck(status="ok", report_id=report_id, new_status="verified")
 
 
-@router.post("/reports/{report_id}/reject", response_model=schemas.AdminActionAck)
+@router.post("/reports/{report_id}/reject", response_model=schemas.AdminActionAck,
+             dependencies=[admin_auth])
 def reject(report_id: str, db: Session = Depends(get_db)):
     report = _get_report(db, report_id)
     set_status(db, report, "rejected")
@@ -61,7 +67,8 @@ def reject(report_id: str, db: Session = Depends(get_db)):
     return schemas.AdminActionAck(status="ok", report_id=report_id, new_status="rejected")
 
 
-@router.post("/reports/{report_id}/duplicate", response_model=schemas.AdminActionAck)
+@router.post("/reports/{report_id}/duplicate", response_model=schemas.AdminActionAck,
+             dependencies=[admin_auth])
 def duplicate(report_id: str, db: Session = Depends(get_db)):
     report = _get_report(db, report_id)
     set_status(db, report, "duplicate")
@@ -74,7 +81,8 @@ def duplicate(report_id: str, db: Session = Depends(get_db)):
     return schemas.AdminActionAck(status="ok", report_id=report_id, new_status="duplicate")
 
 
-@router.post("/reports/{report_id}/false-positive", response_model=schemas.OpAck)
+@router.post("/reports/{report_id}/false-positive", response_model=schemas.OpAck,
+             dependencies=[admin_auth])
 async def false_positive(report_id: str, db: Session = Depends(get_db)):
     report = _get_report(db, report_id)
     entity = db.get(models.Entity, report.entity_id)

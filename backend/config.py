@@ -14,6 +14,14 @@ class Settings(BaseSettings):
     app_env: str = "development"
     database_url: str = "sqlite:///./sentinelgraph.db"
 
+    # Admin API key — gates state-mutating admin/memory routes. When empty, auth
+    # is enforced (fail-closed) in production and skipped in development so the
+    # local demo keeps working. Provide via env in prod.
+    admin_api_key: str = ""
+
+    # Per-client rate limit for public write endpoints (/scan, /report).
+    rate_limit: str = "20/minute"
+
     # CORS — the Next.js web frontend origin(s).
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
@@ -27,6 +35,10 @@ class Settings(BaseSettings):
     @property
     def cognee_enabled(self) -> bool:
         return bool(self.cognee_base_url and self.cognee_api_key)
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env.lower() in {"production", "prod"}
 
     @property
     def origins(self) -> list[str]:

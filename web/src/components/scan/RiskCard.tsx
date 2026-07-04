@@ -31,7 +31,7 @@ export function RiskCard({ scan }: { scan: ScanResult }) {
           </p>
 
           <div className="mt-5 grid grid-cols-3 gap-3">
-            <Stat label="Risk score" value={`${scan.risk_score}`} accent={color} />
+            <Stat label="Trust score" value={`${scan.risk_score}`} accent={color} />
             <Stat label="Confidence" value={pct(scan.confidence)} />
             <Stat label="Signals" value={`${scan.reasons.length}`} />
           </div>

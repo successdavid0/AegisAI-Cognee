@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/scan", label: "Scan", icon: Radar },
   { href: "/graph", label: "Threat Graph", icon: Share2 },
   { href: "/report", label: "Report Scam", icon: FileWarning },
@@ -22,7 +22,7 @@ export function Sidebar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col border-r border-line bg-surface/60 backdrop-blur-xl md:flex">
-      <Link href="/" className="flex items-center gap-2.5 px-5 py-5">
+      <Link href="/dashboard" className="flex items-center gap-2.5 px-5 py-5">
         <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand to-brand-2 shadow-[0_0_24px_-4px_rgba(124,92,255,0.7)]">
           <ShieldHalf className="h-5 w-5 text-white" strokeWidth={2.2} />
         </span>

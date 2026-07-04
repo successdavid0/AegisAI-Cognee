@@ -1,8 +1,14 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  // The marketing landing page ("/") is full-bleed — no sidebar/topbar chrome.
+  if (pathname === "/") return <>{children}</>;
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />

@@ -2,7 +2,7 @@
 import { riskColor } from "@/lib/risk";
 import type { RiskLabel } from "@/lib/types";
 
-/** Semicircular risk gauge, 0–100, colored by label. */
+/** Semicircular trust gauge, 0–100 (higher = safer), colored by label. */
 export function RiskGauge({
   score, label, size = 172,
 }: {
@@ -57,7 +57,7 @@ export function RiskGauge({
           {clamped}
         </span>
         <span className="mt-1 text-[11px] uppercase tracking-widest text-muted">
-          / 100 risk
+          / 100 trust
         </span>
       </div>
     </div>

@@ -1,8 +1,686 @@
 [
-  { "from": "ent_domain_1", "to": "ent_wallet_1", "relationship_type": "drains_to", "confidence": 0.9 },
-  { "from": "ent_domain_1", "to": "ent_handle_1", "relationship_type": "promoted_by", "confidence": 0.85 },
-  { "from": "ent_domain_1", "to": "ent_contract_1", "relationship_type": "deploys", "confidence": 0.8 },
-  { "from": "ent_handle_1", "to": "ent_wallet_1", "relationship_type": "shares_wallet", "confidence": 0.7 },
-  { "from": "ent_contract_1", "to": "ent_wallet_1", "relationship_type": "owned_by", "confidence": 0.75 },
-  { "from": "ent_domain_2", "to": "ent_domain_1", "relationship_type": "similar_kit", "confidence": 0.6 }
+  {
+    "from_value": "@okx_support_bonus",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "claim-okx-reward-demo.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "@okx_rewards_bot",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "claim-okx-reward-demo.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "claim-okx-reward-demo.com",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xf2d9cb49530e0238e63b3d86de588beb9b9fbb84",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "claim-okx-reward-demo.com",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x7ea1d15294781946e1fda2ef435ef19f6c235f9e",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "okx-airdrop-claim.io",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xf2d9cb49530e0238e63b3d86de588beb9b9fbb84",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "okx-airdrop-claim.io",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x7ea1d15294781946e1fda2ef435ef19f6c235f9e",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "okx-claim-portal.net",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xf2d9cb49530e0238e63b3d86de588beb9b9fbb84",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "okx-claim-portal.net",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x7ea1d15294781946e1fda2ef435ef19f6c235f9e",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "0xf2d9cb49530e0238e63b3d86de588beb9b9fbb84",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x9f4d6315cdf601136917b929ff3eb4a8e374bc1d",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x9f4d6315cdf601136917b929ff3eb4a8e374bc1d",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x3101e697b8c993068fd2007c8cf2765fad90d6c6",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x3101e697b8c993068fd2007c8cf2765fad90d6c6",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xef25bdb78cea8c28e0b9a7f163cb0313ffe5f636",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xef25bdb78cea8c28e0b9a7f163cb0313ffe5f636",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xd4cbfe7d94f125a0a8ca4f72ab8abee4b88bf2c7",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xd4cbfe7d94f125a0a8ca4f72ab8abee4b88bf2c7",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x8c597fb20475b767293aa0d65c0af8c4ceba583d",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x7ea1d15294781946e1fda2ef435ef19f6c235f9e",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0x8c597fb20475b767293aa0d65c0af8c4ceba583d",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "0x3befb5161cbd4345f33bec3e386ee96be88ae0c7",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0x8c597fb20475b767293aa0d65c0af8c4ceba583d",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "msg_okx_1",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "claim-okx-reward-demo.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "msg_okx_2",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "claim-okx-reward-demo.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "@binance_helpdesk_airdrop",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "binance-wallet-verify-demo.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "@support_desk_eth",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "binance-wallet-verify-demo.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "binance-wallet-verify-demo.com",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0x9cd476d3d9ef20518f089466ebc1348796c3f288",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "binance-wallet-verify-demo.com",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0xa265cb6f7741ce7386c87d32d51ddb90f4f30217",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "binance-helpdesk.support",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0x9cd476d3d9ef20518f089466ebc1348796c3f288",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "binance-helpdesk.support",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0xa265cb6f7741ce7386c87d32d51ddb90f4f30217",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "binance-account-check.io",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0x9cd476d3d9ef20518f089466ebc1348796c3f288",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "binance-account-check.io",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0xa265cb6f7741ce7386c87d32d51ddb90f4f30217",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "0x9cd476d3d9ef20518f089466ebc1348796c3f288",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x6b5529343e423f988faa97b59b13ce26678651e9",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x6b5529343e423f988faa97b59b13ce26678651e9",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xbd354ab26772eb8298ffe4fd33b759fe05636a7e",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xbd354ab26772eb8298ffe4fd33b759fe05636a7e",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xbde7f7b456bdd81b42f4c662e5ee765378c1b93a",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xbde7f7b456bdd81b42f4c662e5ee765378c1b93a",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x618c89fe7c439477019bb84abc6cd64a400a44e1",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xa265cb6f7741ce7386c87d32d51ddb90f4f30217",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0x618c89fe7c439477019bb84abc6cd64a400a44e1",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "0x0f2e5dcc44a7efa37613e7b08db965199550b75a",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0x618c89fe7c439477019bb84abc6cd64a400a44e1",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "msg_binance_1",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "binance-wallet-verify-demo.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "msg_binance_2",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "binance-wallet-verify-demo.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "@wa_invest_admin",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "wa-invest-demo.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "@crypto_giveaway_now",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "wa-invest-demo.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "wa-invest-demo.com",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xf04b9f34909ead85d7664e7d04586d44993f4741",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "wa-invest-demo.com",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x91e203eae65a8e07ce442a581906e27b83d777ca",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "wa.me/demo-investment-group",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xf04b9f34909ead85d7664e7d04586d44993f4741",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "wa.me/demo-investment-group",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x91e203eae65a8e07ce442a581906e27b83d777ca",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "0xf04b9f34909ead85d7664e7d04586d44993f4741",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x0b4f3609903f001e010c78de1d0609506fb680ee",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x0b4f3609903f001e010c78de1d0609506fb680ee",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xd46fd5bed421dca9524c3dddd308ef6bd6c0f9e6",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xd46fd5bed421dca9524c3dddd308ef6bd6c0f9e6",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xff5e008c9a2d4cbb90640d5acd887d509f97a5a1",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x91e203eae65a8e07ce442a581906e27b83d777ca",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0xff5e008c9a2d4cbb90640d5acd887d509f97a5a1",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "msg_investment_1",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "wa-invest-demo.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "msg_investment_2",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "wa-invest-demo.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "@moonsafe_official",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "rugpull-demo-token.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "rugpull-demo-token.com",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xc851610c6222580276e3bc76ba5a512bf973a324",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "rugpull-demo-token.com",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x1b7c75d96c6f6ab6f36587ec32c9840978841bfa",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "moonsafe-presale.io",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xc851610c6222580276e3bc76ba5a512bf973a324",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "moonsafe-presale.io",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x1b7c75d96c6f6ab6f36587ec32c9840978841bfa",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "moonsafe-airdrop.net",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0xc851610c6222580276e3bc76ba5a512bf973a324",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "moonsafe-airdrop.net",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0x1b7c75d96c6f6ab6f36587ec32c9840978841bfa",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "0xc851610c6222580276e3bc76ba5a512bf973a324",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x957e586d51467c24cddce84e27a931c3621d9c53",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x957e586d51467c24cddce84e27a931c3621d9c53",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x8cd1716c7de4ea692e26ae20c6f3121dc02cf905",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x8cd1716c7de4ea692e26ae20c6f3121dc02cf905",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x35215e62a000bfd43c4b8909c5e2d40978cc13c3",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x35215e62a000bfd43c4b8909c5e2d40978cc13c3",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xc811a2eaca5ce1ec7c88b479a7575482934df707",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x1b7c75d96c6f6ab6f36587ec32c9840978841bfa",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0xc811a2eaca5ce1ec7c88b479a7575482934df707",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "0xe7b4118373275a33470ca5a25ab2f1c2f53a2f31",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0xc811a2eaca5ce1ec7c88b479a7575482934df707",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "0x64f5f1036eb320265292492746097bfc0172ec5b",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0xc811a2eaca5ce1ec7c88b479a7575482934df707",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "msg_pull_1",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "rugpull-demo-token.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "msg_pull_2",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "rugpull-demo-token.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "@metamask_supporthelp",
+    "from_type": "handle",
+    "relationship_type": "promotes",
+    "to_value": "metamask-wallet-verify.com",
+    "to_type": "domain",
+    "confidence": 0.85,
+    "evidence": "Fake support handle shares the campaign link."
+  },
+  {
+    "from_value": "metamask-wallet-verify.com",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0x9bfbb456371842a468377573756f05f8b172f08e",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "metamask-wallet-verify.com",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0xc9e14989987a695f0ebb05c5288da069116a36a0",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "metamask-secure-login.app",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0x9bfbb456371842a468377573756f05f8b172f08e",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "metamask-secure-login.app",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0xc9e14989987a695f0ebb05c5288da069116a36a0",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "metamask-support-desk.com",
+    "from_type": "domain",
+    "relationship_type": "mentions_wallet",
+    "to_value": "0x9bfbb456371842a468377573756f05f8b172f08e",
+    "to_type": "wallet",
+    "confidence": 0.95,
+    "evidence": "Phishing page directs victims to connect/send funds."
+  },
+  {
+    "from_value": "metamask-support-desk.com",
+    "from_type": "domain",
+    "relationship_type": "deploys",
+    "to_value": "0xc9e14989987a695f0ebb05c5288da069116a36a0",
+    "to_type": "contract",
+    "confidence": 0.8,
+    "evidence": "Domain drops the drainer contract."
+  },
+  {
+    "from_value": "0x9bfbb456371842a468377573756f05f8b172f08e",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x229a6208a07c831c037db4377954814088615b8f",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0x229a6208a07c831c037db4377954814088615b8f",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xf09962c173eada073ae7a1c38244b6647e767621",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xf09962c173eada073ae7a1c38244b6647e767621",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xf6dc765aee8e836815e6a26e8179778ed33a0c02",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xf6dc765aee8e836815e6a26e8179778ed33a0c02",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0xb4d1525c1ecc92aa48269221d24ca25412e97695",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xb4d1525c1ecc92aa48269221d24ca25412e97695",
+    "from_type": "wallet",
+    "relationship_type": "sends_funds_to",
+    "to_value": "0x6dd64cf5aeddca9829bc0262d7e3da1e7adf69e9",
+    "to_type": "wallet",
+    "confidence": 0.9,
+    "evidence": "On-chain laundering hop."
+  },
+  {
+    "from_value": "0xc9e14989987a695f0ebb05c5288da069116a36a0",
+    "from_type": "contract",
+    "relationship_type": "deployed_by",
+    "to_value": "0x6dd64cf5aeddca9829bc0262d7e3da1e7adf69e9",
+    "to_type": "wallet",
+    "confidence": 0.75,
+    "evidence": "Deployer wallet."
+  },
+  {
+    "from_value": "msg_metamask_1",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "metamask-wallet-verify.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  },
+  {
+    "from_value": "msg_metamask_2",
+    "from_type": "message",
+    "relationship_type": "references",
+    "to_value": "metamask-wallet-verify.com",
+    "to_type": "domain",
+    "confidence": 0.9,
+    "evidence": "Message links the phishing domain."
+  }
 ]

@@ -1,8 +1,9 @@
 """Seed loading (Backend Spec §5). Idempotent: safe to run on every startup.
 
-Loads the fake-Uniswap-airdrop campaign — the same demo the frontend renders —
-into the app DB: cluster, sources, entities, relationships, reports, plus a few
-scan/memory events so the dashboard has real activity to show.
+Loads the five-campaign demo world from data/*.json — entities, relationships,
+reports, messages, and false-positive corrections — resolving references by
+value, then recomputes rule-based risk so stored scores match what a scan
+produces. Clusters and sources are defined here (small, stable).
 """
 from __future__ import annotations
 
@@ -14,123 +15,175 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 import models
+from services.common import new_id
+from services.entity_extractor import normalize_entity
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 
-CLUSTERS = [
-    {"id": "cluster_1", "value": "Fake Uniswap Airdrop Campaign", "risk_label": "Critical"},
-]
+# 5 scam clusters (campaigns). Entities reference these by name.
+CLUSTERS = {
+    "Fake OKX Airdrop": "cluster_okx",
+    "Fake Binance Support": "cluster_binance",
+    "WhatsApp Investment Scam": "cluster_whatsapp",
+    "Rug Pull Token": "cluster_rugpull",
+    "Fake MetaMask Verification": "cluster_metamask",
+}
 
-SOURCES = [
-    {"id": "src_cryptoscamdb", "name": "CryptoScamDB", "source_type": "threat_feed", "reliability_score": 0.9},
-    {"id": "src_community", "name": "Community report", "source_type": "user_report", "reliability_score": 0.6},
-    {"id": "src_internal", "name": "Internal graph", "source_type": "derived", "reliability_score": 0.85},
-    {"id": "src_whois", "name": "WHOIS heuristic", "source_type": "heuristic", "reliability_score": 0.7},
-]
+# Evidence sources. `public_feed` sources trigger the +30 public-scam-source
+# signal; `whitelist` triggers the -30 legitimate-source signal.
+SOURCES = {
+    "chainabuse": ("Chainabuse", "public_feed", 0.9),
+    "cryptoscamdb": ("CryptoScamDB", "public_feed", 0.9),
+    "phishtank": ("PhishTank", "public_feed", 0.85),
+    "community": ("Community report", "user_report", 0.6),
+    "internal": ("Internal graph", "derived", 0.85),
+    "whitelist": ("Verified whitelist", "whitelist", 0.95),
+    "demo_seed": ("Demo seed", "seed", 0.7),
+}
 
-REPORTS = [
-    {"id": "rpt_1", "entity_id": "ent_domain_1", "source_id": "src_cryptoscamdb", "scam_type": "Fake Airdrop",
-     "description": "Site asked me to approve tokens then drained my wallet.", "confidence": 0.8, "status": "verified", "age_min": 30},
-    {"id": "rpt_1b", "entity_id": "ent_domain_1", "source_id": "src_community", "scam_type": "Phishing",
-     "description": "Typosquat of uniswap.org promoted in a Telegram group.", "confidence": 0.7, "status": "pending", "age_min": 90},
-    {"id": "rpt_2", "entity_id": "ent_handle_1", "source_id": "src_community", "scam_type": "Impersonation",
-     "description": "DM'd me pretending to be Uniswap support.", "confidence": 0.7, "status": "pending", "age_min": 120},
-    {"id": "rpt_3", "entity_id": "ent_wallet_1", "source_id": "src_internal", "scam_type": "Wallet Drainer",
-     "description": "Received my funds after the airdrop scam.", "confidence": 0.9, "status": "verified", "age_min": 600},
-    {"id": "rpt_3b", "entity_id": "ent_wallet_1", "source_id": "src_community", "scam_type": "Wallet Drainer",
-     "description": "This address swept my tokens seconds after I approved.", "confidence": 0.8, "status": "pending", "age_min": 300},
-    {"id": "rpt_4", "entity_id": "ent_domain_2", "source_id": "src_community", "scam_type": "Phishing",
-     "description": "Looks like a MetaMask phishing clone.", "confidence": 0.6, "status": "pending", "age_min": 900},
-    {"id": "rpt_4b", "entity_id": "ent_domain_2", "source_id": "src_whois", "scam_type": "Phishing",
-     "description": "Registered days ago, mimics metamask.io login.", "confidence": 0.55, "status": "pending", "age_min": 1200},
-    {"id": "rpt_5", "entity_id": "ent_wallet_fp", "source_id": "src_community", "scam_type": "Other",
-     "description": "Might be a scam but I'm not sure, could be my mistake.", "confidence": 0.3, "status": "false_positive", "age_min": 2400},
-]
+_LABEL = {"critical": "Critical", "high": "High Risk", "suspicious": "Suspicious", "low": "Low Risk"}
+_LABEL_SCORE = {"critical": 10, "high": 30, "suspicious": 55, "low": 90}  # safety scores
 
-# Recent scans to give the dashboard real activity.
-SEED_SCANS = [
-    {"value": "uniswap-airdrop-claim.io", "type": "domain", "score": 92, "label": "Critical", "age_min": 6},
-    {"value": "0x9a1f2c3d4e5f60718293a4b5c6d7e8f901234567", "type": "wallet", "score": 88, "label": "Critical", "age_min": 22},
-    {"value": "@uniswap_airdrop_support", "type": "handle", "score": 74, "label": "High Risk", "age_min": 51},
-    {"value": "metamask-wallet-verify.com", "type": "domain", "score": 48, "label": "Suspicious", "age_min": 140},
-    {"value": "vitalik.eth", "type": "handle", "score": 8, "label": "Low Risk", "age_min": 190},
-]
+
+def _load(name: str) -> list[dict]:
+    path = DATA / name
+    return json.loads(path.read_text()) if path.exists() else []
 
 
 def _now(offset_min: int = 0) -> datetime:
     return datetime.now(timezone.utc) - timedelta(minutes=offset_min)
 
 
-def _parse_date(s: str) -> datetime:
-    return datetime.fromisoformat(s).replace(tzinfo=timezone.utc)
-
-
 def load_seed(db: Session) -> None:
     if db.scalar(select(models.Entity).limit(1)):
         return  # already seeded
 
-    for c in CLUSTERS:
-        db.add(models.Cluster(**c))
-    for s in SOURCES:
-        db.add(models.Source(**s))
+    # Clusters + sources
+    for name, cid in CLUSTERS.items():
+        db.add(models.Cluster(id=cid, value=name, risk_label="Critical"))
+    for key, (nm, stype, rel) in SOURCES.items():
+        db.add(models.Source(id=key, name=nm, source_type=stype, reliability_score=rel))
     db.flush()
 
-    entities = json.loads((DATA / "seed_entities.json").read_text())
-    for e in entities:
+    # Entities (raw value -> id, so seed refs resolve consistently)
+    value_to_id: dict[str, str] = {}
+    for e in _load("seed_entities.json"):
+        raw = e["value"]
+        norm = normalize_entity(raw, e["entity_type"])
+        eid = new_id("ent")
         db.add(models.Entity(
-            id=e["id"], entity_type=e["entity_type"], value=e["value"], chain=e["chain"],
-            status=e["status"], risk_label=e["risk_label"], risk_score=e["risk_score"],
-            confidence=e["confidence"], cluster_id=e["cluster_id"],
-            first_seen=_parse_date(e["first_seen"]), last_seen=_parse_date(e["first_seen"]),
+            id=eid,
+            entity_type=e["entity_type"],
+            value=norm,
+            chain=e.get("chain"),
+            status=e.get("status", "flagged"),
+            risk_label=_LABEL.get(e.get("risk_label", "low"), "Unknown"),
+            risk_score=_LABEL_SCORE.get(e.get("risk_label", "low")),
+            confidence=e.get("confidence"),
+            cluster_id=CLUSTERS.get(e.get("cluster")),
+            first_seen=_now(60 * 24 * 12),
+            last_seen=_now(60 * 24),
         ))
+        value_to_id[raw] = eid
+        value_to_id[norm] = eid
     db.flush()
 
-    rels = json.loads((DATA / "seed_relationships.json").read_text())
-    for r in rels:
-        db.add(models.Relationship(
-            from_entity_id=r["from"], to_entity_id=r["to"],
-            relationship_type=r["relationship_type"], confidence=r["confidence"],
-        ))
+    def resolve(v: str) -> str | None:
+        return value_to_id.get(v) or value_to_id.get(v.lower())
 
-    for r in REPORTS:
+    # Relationships (resolved by value)
+    for r in _load("seed_relationships.json"):
+        a, b = resolve(r["from_value"]), resolve(r["to_value"])
+        if a and b:
+            db.add(models.Relationship(
+                from_entity_id=a, to_entity_id=b,
+                relationship_type=r["relationship_type"],
+                confidence=r.get("confidence", 0.5), evidence=r.get("evidence"),
+            ))
+
+    # Reports (resolved by value; source key -> Source row)
+    for i, rp in enumerate(_load("seed_reports.json")):
+        eid = resolve(rp["entity_value"])
+        if not eid:
+            continue
+        src = rp.get("source", "community")
         db.add(models.Report(
-            id=r["id"], entity_id=r["entity_id"], source_id=r["source_id"],
-            scam_type=r["scam_type"], description=r["description"], evidence=r["description"],
-            confidence=r["confidence"], status=r["status"], created_at=_now(r["age_min"]),
+            id=new_id("rpt"), entity_id=eid,
+            source_id=src if src in SOURCES else "community",
+            scam_type=rp.get("scam_type", "other"),
+            description=rp.get("description", ""),
+            evidence=rp.get("evidence"),
+            confidence=rp.get("confidence", 0.6),
+            status=rp.get("status", "pending"),
+            created_at=_now(30 + i * 17),
+        ))
+
+    # Messages: enrich the message entity with its full text.
+    for m in _load("seed_messages.json"):
+        eid = resolve(m["message_id"])
+        if eid:
+            ent = db.get(models.Entity, eid)
+            if ent:
+                ent.status = "flagged"
+
+    db.flush()
+
+    # False-positive corrections -> flip the entity's report, record a forget
+    # event, and mark the entity cleared. Drives the "forget" story + stat.
+    for c in _load("seed_corrections.json"):
+        eid = resolve(c["entity_value"])
+        if not eid:
+            continue
+        rpt = db.scalar(select(models.Report).where(models.Report.entity_id == eid))
+        old_status = rpt.status if rpt else "pending"
+        if rpt:
+            rpt.status = "false_positive"
+        ent = db.get(models.Entity, eid)
+        if ent:
+            ent.status = "cleared"
+        db.add(models.ForgetEvent(
+            entity_id=eid, report_id=rpt.id if rpt else None,
+            reason="false_positive", old_status=old_status, new_status="cleared",
+        ))
+        db.add(models.MemoryEvent(
+            id=new_id("mem"), event_type="forget", entity_id=eid,
+            summary=f"Forgot false-positive claim ({c['reason'][:60]})",
+            reason="Admin review cleared this entity; -50 correction applied.",
+            created_at=_now(20),
         ))
     db.flush()
 
-    # Recompute each entity's stored risk from the rule engine so the values
-    # shown in the graph/dashboard match what a scan would produce. Two passes
-    # so neighbour scores are populated before the flagged-neighbour checks.
+    # Recompute risk from rules (two passes so neighbour scores populate first).
     from services.risk_engine import calculate_risk
 
     all_entities = db.scalars(select(models.Entity)).all()
     for _ in range(2):
         for ent in all_entities:
-            verdict = calculate_risk(db, ent)
-            ent.risk_score = verdict["score"]
-            ent.risk_label = verdict["label"]
-            ent.confidence = verdict["confidence"]
+            v = calculate_risk(db, ent)
+            ent.risk_score, ent.risk_label, ent.confidence = v["score"], v["label"], v["confidence"]
         db.flush()
 
-    for i, sc in enumerate(SEED_SCANS):
-        db.add(models.ScanEvent(
-            id=f"scan_seed_{i}", input_value=sc["value"], input_type=sc["type"],
-            risk_score=sc["score"], risk_label=sc["label"], confidence=0.8,
-            explanation_json="{}", created_at=_now(sc["age_min"]),
-        ))
-
-    # A couple of memory events so the lifecycle/dashboard isn't empty.
+    # A few scan events + a seed improve event for dashboard activity.
+    heroes = [
+        ("claim-okx-reward-demo.com", "domain", 6),
+        ("binance-wallet-verify-demo.com", "domain", 24),
+        ("metamask-wallet-verify.com", "domain", 60),
+        ("rugpull-demo-token.com", "domain", 130),
+    ]
+    for i, (val, typ, age) in enumerate(heroes):
+        eid = resolve(val)
+        ent = db.get(models.Entity, eid) if eid else None
+        if ent:
+            db.add(models.ScanEvent(
+                id=f"scan_seed_{i}", input_value=ent.value, input_type=typ,
+                entity_id=eid, risk_score=ent.risk_score or 0, risk_label=ent.risk_label,
+                confidence=ent.confidence or 0.8, explanation_json="{}", created_at=_now(age),
+            ))
     db.add(models.MemoryEvent(
-        id="mem_seed_1", event_type="improve", entity_id="ent_domain_1",
-        summary="Linked entities into the Fake Uniswap Airdrop cluster",
-        reason="Enrichment matched shared wallet + domain patterns.", created_at=_now(45),
-    ))
-    db.add(models.MemoryEvent(
-        id="mem_seed_2", event_type="forget", entity_id="ent_wallet_fp",
-        summary="Downgraded a stale false-positive claim",
-        reason="Address cleared by admin review; -50 correction applied.", created_at=_now(20),
+        id="mem_seed_improve", event_type="improve", entity_id=resolve("claim-okx-reward-demo.com"),
+        summary="Linked entities across 5 campaigns into scam clusters",
+        reason="Enrichment matched shared wallets, domains, and deployer patterns.",
+        created_at=_now(45),
     ))
 
     db.commit()

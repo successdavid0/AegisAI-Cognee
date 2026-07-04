@@ -1,8 +1,9 @@
-"""Explainable rule-based risk engine (Backend Spec §10, PRD §8).
+"""Explainable rule-based safety engine (Backend Spec §10, PRD §8).
 
 Deliberately rule-based so every verdict is explainable: each signal contributes
-a fixed weight and a human-readable reason. The score is the sum of matched
-signals, clamped to 0–100.
+a fixed weight and a human-readable reason. Signals are summed into a risk total,
+which is then inverted into a **Safety / Trust score** (higher = safer): a fully
+clean entity scores near 100, a confirmed scam near 0.
 """
 from __future__ import annotations
 
@@ -11,13 +12,13 @@ from sqlalchemy.orm import Session
 
 import models
 
-# (label bands mirror PRD §8 / Backend Spec §10)
+# Safety-score bands (higher = safer). `score` is the trust score, not risk.
 def label_from_score(score: int) -> str:
-    if score <= 30:
+    if score >= 70:
         return "Low Risk"
-    if score <= 60:
+    if score >= 40:
         return "Suspicious"
-    if score <= 80:
+    if score >= 20:
         return "High Risk"
     return "Critical"
 
@@ -46,7 +47,7 @@ def calculate_risk(db: Session, entity: models.Entity | None) -> dict:
 
     if entity is None:
         return {
-            "score": 0,
+            "score": 100,  # no evidence found = presumed safe
             "label": "Low Risk",
             "confidence": 0.4,
             "reasons": [{"text": "No verified scam evidence found", "weight": 0}],
@@ -65,9 +66,20 @@ def calculate_risk(db: Session, entity: models.Entity | None) -> dict:
         score += 40
         reasons.append({"text": "Verified scam source", "weight": 40})
 
+    # 1b. Listed in a public scam source / threat feed (+30)
+    public_feed = False
+    for r in reports:
+        src = db.get(models.Source, r.source_id) if r.source_id else None
+        if src and src.source_type in {"public_feed", "threat_feed"}:
+            public_feed = True
+            break
+    if public_feed:
+        score += 30
+        reasons.append({"text": "Listed in a public scam source", "weight": 30})
+
     # 2. Connected to a flagged wallet (+25)
     flagged_wallet = next(
-        (n for n in neighbors if n.entity_type == "wallet" and (n.risk_score or 0) >= 61),
+        (n for n in neighbors if n.entity_type == "wallet" and (n.risk_score or 100) <= 39),
         None,
     )
     if flagged_wallet:
@@ -80,7 +92,7 @@ def calculate_risk(db: Session, entity: models.Entity | None) -> dict:
 
     # 3. Linked to a phishing domain (+20)
     phishing_domain = next(
-        (n for n in neighbors if n.entity_type == "domain" and (n.risk_score or 0) >= 61),
+        (n for n in neighbors if n.entity_type == "domain" and (n.risk_score or 100) <= 39),
         None,
     )
     if phishing_domain:
@@ -104,12 +116,18 @@ def calculate_risk(db: Session, entity: models.Entity | None) -> dict:
         score += 20
         reasons.append({"text": "Member of an active scam cluster", "weight": 20})
 
-    # 7. False-positive marker (-50)
+    # 7. Whitelisted / verified legitimate source (-30)
+    if entity.status == "whitelisted":
+        score -= 30
+        reasons.append({"text": "Whitelisted / verified legitimate source", "weight": -30})
+
+    # 8. False-positive marker (-50)
     if false_positives:
         score -= 50
         reasons.append({"text": "Cleared false-positive correction applied", "weight": -50})
 
-    score = max(0, min(score, 100))
+    # Invert the accumulated risk into a Safety / Trust score (higher = safer).
+    score = 100 - max(0, min(score, 100))
 
     if not reasons:
         reasons.append({"text": "No verified scam evidence found", "weight": 0})
@@ -126,7 +144,7 @@ def calculate_risk(db: Session, entity: models.Entity | None) -> dict:
 
     positive_signals = sum(1 for r in reasons if r["weight"] > 0)
     confidence = round(min(0.5 + 0.1 * positive_signals, 0.95), 2)
-    if score == 0:
+    if positive_signals == 0:
         confidence = 0.4
 
     return {

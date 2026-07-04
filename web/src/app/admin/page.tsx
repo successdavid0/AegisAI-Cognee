@@ -1,7 +1,7 @@
 "use client";
-import { useMemo, useState } from "react";
-import { ShieldCheck, Sparkles, Eraser, AlertTriangle } from "lucide-react";
-import { api } from "@/lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { ShieldCheck, Sparkles, Eraser, AlertTriangle, KeyRound } from "lucide-react";
+import { api, adminKey } from "@/lib/api";
 import { store } from "@/lib/store";
 import { useData } from "@/lib/useData";
 import { PageHeader, Panel, Button, DataBadge, Skeleton } from "@/components/ui/primitives";
@@ -15,6 +15,8 @@ const FILTERS: (ReportStatus | "all")[] = [
 export default function AdminPage() {
   const reports = useData(() => api.adminReports(), []);
   const [filter, setFilter] = useState<ReportStatus | "all">("pending");
+  const [key, setKey] = useState("");
+  useEffect(() => setKey(adminKey.get()), []);
 
   const filtered = useMemo(
     () =>
@@ -47,6 +49,23 @@ export default function AdminPage() {
           them. Marking a <span className="text-ink">false positive</span> triggers a Cognee
           forget/correction that lowers future risk scores.
         </p>
+      </div>
+
+      {/* Admin key — required by the backend in production; blank works in local dev. */}
+      <div className="panel mb-5 flex flex-wrap items-center gap-3 p-4">
+        <KeyRound className="h-4 w-4 shrink-0 text-brand-2" />
+        <label className="text-sm text-ink-soft">Admin key</label>
+        <input
+          type="password"
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          onBlur={() => adminKey.set(key)}
+          placeholder="X-Admin-Key (sent with admin actions)"
+          className="mono focus-ring min-w-[240px] flex-1 rounded-lg border border-line bg-surface-2/60 px-3 py-2 text-xs text-ink placeholder:font-sans placeholder:text-muted"
+        />
+        <Button variant="outline" size="sm" onClick={() => adminKey.set(key)}>
+          Save key
+        </Button>
       </div>
 
       {/* Filters */}

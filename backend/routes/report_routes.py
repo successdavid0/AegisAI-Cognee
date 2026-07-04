@@ -1,13 +1,15 @@
 """Report routes (Backend Spec §4, §8.2)."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 import models
 import schemas
+from config import settings
 from database import get_db
+from ratelimit import limiter
 from services import cognee_service
 from services.common import report_out
 from services.report_service import create_report
@@ -16,7 +18,8 @@ router = APIRouter(tags=["report"])
 
 
 @router.post("/report", response_model=schemas.ReportAck)
-async def submit_report(req: schemas.ReportRequest, db: Session = Depends(get_db)):
+@limiter.limit(settings.rate_limit)
+async def submit_report(request: Request, req: schemas.ReportRequest, db: Session = Depends(get_db)):
     if not req.value.strip() or not req.description.strip():
         raise HTTPException(status_code=422, detail="Entity and description are required.")
 

@@ -1,0 +1,72 @@
+[
+  {
+    "message_id": "msg_okx_1",
+    "text": "Congratulations, your wallet was selected for the OKX reward airdrop. Connect your wallet and claim within 24 hours.",
+    "scam_type": "fake_airdrop",
+    "linked_domain": "claim-okx-reward-demo.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_okx_2",
+    "text": "OKX security alert: verify your wallet now at claim-okx-reward-demo.com or lose access.",
+    "scam_type": "fake_airdrop",
+    "linked_domain": "claim-okx-reward-demo.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_binance_1",
+    "text": "Binance Support: suspicious login detected. Re-validate your wallet immediately to avoid suspension.",
+    "scam_type": "phishing",
+    "linked_domain": "binance-wallet-verify-demo.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_binance_2",
+    "text": "Your Binance account is limited. Confirm ownership at binance-wallet-verify-demo.com.",
+    "scam_type": "phishing",
+    "linked_domain": "binance-wallet-verify-demo.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_investment_1",
+    "text": "Invest $100 and receive $500 in 24 hours. Guaranteed by our licensed traders. Join now.",
+    "scam_type": "investment_scam",
+    "linked_domain": "wa-invest-demo.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_investment_2",
+    "text": "Our VIP signal group turned $500 into $6,000 this week. Send USDT to join.",
+    "scam_type": "investment_scam",
+    "linked_domain": "wa-invest-demo.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_pull_1",
+    "text": "MoonSafe presale is live! 100x guaranteed. Liquidity locked forever. Buy before it sells out.",
+    "scam_type": "rug_pull",
+    "linked_domain": "rugpull-demo-token.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_pull_2",
+    "text": "Last chance: MoonSafe presale ends tonight. Send ETH to the contract to secure your allocation.",
+    "scam_type": "rug_pull",
+    "linked_domain": "rugpull-demo-token.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_metamask_1",
+    "text": "Your MetaMask needs re-validation. Confirm your secret phrase at metamask-wallet-verify.com to avoid suspension.",
+    "scam_type": "phishing",
+    "linked_domain": "metamask-wallet-verify.com",
+    "confidence": 0.9
+  },
+  {
+    "message_id": "msg_metamask_2",
+    "text": "MetaMask security team: unusual activity detected. Sync your wallet now to prevent a permanent lock.",
+    "scam_type": "phishing",
+    "linked_domain": "metamask-wallet-verify.com",
+    "confidence": 0.9
+  }
+]

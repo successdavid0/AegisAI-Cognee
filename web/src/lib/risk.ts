@@ -42,10 +42,11 @@ export const RISK: Record<
   },
 };
 
+// Safety-score bands (higher = safer), mirroring backend label_from_score.
 export function labelForScore(score: number): RiskLabel {
-  if (score <= 30) return "Low Risk";
-  if (score <= 60) return "Suspicious";
-  if (score <= 80) return "High Risk";
+  if (score >= 70) return "Low Risk";
+  if (score >= 40) return "Suspicious";
+  if (score >= 20) return "High Risk";
   return "Critical";
 }
 

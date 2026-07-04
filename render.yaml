@@ -1,0 +1,50 @@
+# Render Blueprint for the AEGIS backend (FastAPI + SQLite + Cognee cloud).
+# Deploy: push this repo to GitHub, then Render → New → Blueprint → pick this repo.
+#
+# NOTE ON THE DISK: SQLite needs a persistent disk to survive redeploys. Render
+# disks require a paid instance type (Free instances have NO persistent disk).
+# - For a durable deploy: keep the `disk:` block + a paid `plan` (starter shown).
+# - For a throwaway demo on Free: delete the `disk:` block, set plan: free, and
+#   change DATABASE_URL to sqlite:///./sentinelgraph.db (data resets on redeploy;
+#   the demo seed reloads on startup, and Cognee still holds the full mirror).
+services:
+  - type: web
+    name: aegis-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: aegis-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: APP_ENV
+        value: production
+      # Store the SQLite file on the persistent disk mounted at /data.
+      # (Four slashes = absolute path: sqlite://// + /data/...)
+      - key: DATABASE_URL
+        value: sqlite:////data/sentinelgraph.db
+      # Comma-separated allowed frontend origins (set to your Vercel URL,
+      # e.g. https://aegis.vercel.app — no trailing slash).
+      - key: CORS_ORIGINS
+        sync: false
+      # Per-client rate limit for public write endpoints (/scan, /report).
+      - key: RATE_LIMIT
+        value: 20/minute
+      - key: COGNEE_DATASET
+        value: global-threat-intel
+      # Secrets — set these in the Render dashboard, never commit them.
+      # ADMIN_API_KEY: REQUIRED in production. Without it, admin/memory
+      # mutations fail closed (503). Generate a strong random value.
+      - key: ADMIN_API_KEY
+        generateValue: true
+      - key: COGNEE_BASE_URL
+        sync: false
+      - key: COGNEE_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

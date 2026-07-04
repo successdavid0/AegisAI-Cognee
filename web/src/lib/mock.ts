@@ -39,11 +39,11 @@ const DOMAIN = "uniswap-airdrop-claim.io";
 const DOMAIN2 = "metamask-wallet-verify.com";
 
 export const ENTITIES: Record<string, SeedEntity> = {
-  [DOMAIN]: { id: "ent_domain_1", type: "domain", value: DOMAIN, risk_label: "Critical", risk_score: 92, confidence: 0.94, status: "verified", first_seen: "2026-06-21", chain: null },
-  [WALLET]: { id: "ent_wallet_1", type: "wallet", value: WALLET, risk_label: "Critical", risk_score: 88, confidence: 0.9, status: "verified", first_seen: "2026-06-18", chain: "ethereum" },
-  [HANDLE]: { id: "ent_handle_1", type: "handle", value: HANDLE, risk_label: "High Risk", risk_score: 74, confidence: 0.82, status: "verified", first_seen: "2026-06-22", chain: null },
-  [CONTRACT]: { id: "ent_contract_1", type: "contract", value: CONTRACT, risk_label: "High Risk", risk_score: 71, confidence: 0.78, status: "verified", first_seen: "2026-06-19", chain: "ethereum" },
-  [DOMAIN2]: { id: "ent_domain_2", type: "domain", value: DOMAIN2, risk_label: "Suspicious", risk_score: 48, confidence: 0.6, status: "pending", first_seen: "2026-06-28", chain: null },
+  [DOMAIN]: { id: "ent_domain_1", type: "domain", value: DOMAIN, risk_label: "Critical", risk_score: 8, confidence: 0.94, status: "verified", first_seen: "2026-06-21", chain: null },
+  [WALLET]: { id: "ent_wallet_1", type: "wallet", value: WALLET, risk_label: "Critical", risk_score: 12, confidence: 0.9, status: "verified", first_seen: "2026-06-18", chain: "ethereum" },
+  [HANDLE]: { id: "ent_handle_1", type: "handle", value: HANDLE, risk_label: "High Risk", risk_score: 26, confidence: 0.82, status: "verified", first_seen: "2026-06-22", chain: null },
+  [CONTRACT]: { id: "ent_contract_1", type: "contract", value: CONTRACT, risk_label: "High Risk", risk_score: 29, confidence: 0.78, status: "verified", first_seen: "2026-06-19", chain: "ethereum" },
+  [DOMAIN2]: { id: "ent_domain_2", type: "domain", value: DOMAIN2, risk_label: "Suspicious", risk_score: 52, confidence: 0.6, status: "pending", first_seen: "2026-06-28", chain: null },
 };
 
 const CLUSTER = {
@@ -138,10 +138,10 @@ export function mockScan(value: string): ScanResult {
     evidence = etype === "domain" ? DOMAIN_EVIDENCE : DOMAIN_EVIDENCE.slice(0, 2);
     related = relatedFor(v);
   } else {
-    score = hash(v) % 55;
+    score = 100 - (hash(v) % 55);
     entityId = sid("ent", v);
     reasons = [{ text: "No verified scam evidence found", weight: 0 }];
-    if (score > 30) reasons.push({ text: "Weak similarity to known scam message patterns", weight: 10 });
+    if (score < 70) reasons.push({ text: "Weak similarity to known scam message patterns", weight: 10 });
     evidence = [];
     related = [];
   }
@@ -218,11 +218,11 @@ export function mockStats(): Stats {
 
 export function mockRecentScans(): RecentScan[] {
   const base: [string, EntityType, number, RiskLabel, number][] = [
-    [DOMAIN, "domain", 92, "Critical", 6],
-    [WALLET, "wallet", 88, "Critical", 22],
-    [HANDLE, "handle", 74, "High Risk", 51],
-    [DOMAIN2, "domain", 48, "Suspicious", 140],
-    ["vitalik.eth", "handle", 8, "Low Risk", 190],
+    [DOMAIN, "domain", 8, "Critical", 6],
+    [WALLET, "wallet", 12, "Critical", 22],
+    [HANDLE, "handle", 26, "High Risk", 51],
+    [DOMAIN2, "domain", 52, "Suspicious", 140],
+    ["vitalik.eth", "handle", 92, "Low Risk", 190],
   ];
   return base.map(([v, t, s, l, m]) => ({ input_value: v, input_type: t, risk_score: s, risk_label: l, timestamp: nowIso(m) }));
 }

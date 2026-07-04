@@ -3,13 +3,15 @@ from __future__ import annotations
 
 import json
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 import models
 import schemas
+from config import settings
 from database import get_db
+from ratelimit import limiter
 from services import cognee_service
 from services.common import (
     find_or_create_entity, iso, log_memory_event, memory_event_out,
@@ -22,7 +24,8 @@ router = APIRouter(tags=["scan"])
 
 
 @router.post("/scan", response_model=schemas.ScanResult)
-async def scan(req: schemas.ScanRequest, db: Session = Depends(get_db)):
+@limiter.limit(settings.rate_limit)
+async def scan(request: Request, req: schemas.ScanRequest, db: Session = Depends(get_db)):
     value = (req.value or "").strip()
     if not value:
         raise HTTPException(status_code=422, detail="Scan input must not be empty.")

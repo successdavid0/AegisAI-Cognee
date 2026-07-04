@@ -1,0 +1,42 @@
+[
+  {
+    "entity_value": "0x18a7fcccf0169b857cc074d11c7a8cd820dd0758",
+    "entity_type": "wallet",
+    "old_status": "flagged",
+    "new_status": "cleared",
+    "reason": "Community mistakenly flagged; verified as a victim wallet, not a scammer.",
+    "action": "forget_scam_claim"
+  },
+  {
+    "entity_value": "0x7f2ca52f03677eb4a071491929681db6079ac002",
+    "entity_type": "wallet",
+    "old_status": "flagged",
+    "new_status": "cleared",
+    "reason": "Flagged in error; confirmed to be an exchange deposit address.",
+    "action": "forget_scam_claim"
+  },
+  {
+    "entity_value": "0xa99c935f4d49b19c6a3b7833a079012a21052d78",
+    "entity_type": "wallet",
+    "old_status": "flagged",
+    "new_status": "cleared",
+    "reason": "Duplicate of an already-cleared report; not a scam wallet.",
+    "action": "forget_scam_claim"
+  },
+  {
+    "entity_value": "0x481f037d343c5765ee627668d8362d253844e114",
+    "entity_type": "wallet",
+    "old_status": "flagged",
+    "new_status": "cleared",
+    "reason": "Reported by mistake; address belongs to an audited project treasury.",
+    "action": "forget_scam_claim"
+  },
+  {
+    "entity_value": "0x349db48dd44117b94b2c769261c0a9a13afca96f",
+    "entity_type": "wallet",
+    "old_status": "flagged",
+    "new_status": "cleared",
+    "reason": "False positive: this is a legitimate user's wallet, cleared on review.",
+    "action": "forget_scam_claim"
+  }
+]

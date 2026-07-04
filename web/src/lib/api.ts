@@ -12,6 +12,22 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const MOCK_ONLY =
   (process.env.NEXT_PUBLIC_MOCK_ONLY ?? "true").toLowerCase() !== "false";
 
+// Admin key for state-mutating admin/memory routes. Kept in sessionStorage and
+// entered at runtime on the Admin page — never baked into the JS bundle, so it
+// is not shipped to every client the way a NEXT_PUBLIC_ var would be.
+const ADMIN_KEY_STORAGE = "aegis_admin_key";
+export const adminKey = {
+  get: (): string =>
+    typeof window === "undefined" ? "" : sessionStorage.getItem(ADMIN_KEY_STORAGE) ?? "",
+  set: (v: string) => {
+    if (typeof window !== "undefined") sessionStorage.setItem(ADMIN_KEY_STORAGE, v.trim());
+  },
+};
+function adminHeaders(): Record<string, string> {
+  const k = adminKey.get();
+  return k ? { "X-Admin-Key": k } : {};
+}
+
 async function call<T>(
   path: string,
   fallback: () => T,
@@ -49,12 +65,15 @@ export const api = {
     ),
 
   improve: () =>
-    call("/memory/improve", () => mock.mockImproveAck(), { method: "POST", body: "{}" }),
+    call("/memory/improve", () => mock.mockImproveAck(), {
+      method: "POST", body: "{}", headers: adminHeaders(),
+    }),
 
   forget: (reason = "false_positive", reportId?: string) =>
     call("/memory/forget", () => mock.mockForgetAck(reason), {
       method: "POST",
       body: JSON.stringify({ reason, report_id: reportId ?? null }),
+      headers: adminHeaders(),
     }),
 
   submitReport: (payload: ReportPayload) =>
@@ -66,16 +85,16 @@ export const api = {
   adminReports: () => call<Report[]>("/admin/reports", () => mock.mockReports()),
 
   verifyReport: (id: string) =>
-    call(`/admin/reports/${id}/verify`, () => ({ status: "ok", report_id: id, new_status: "verified" }), { method: "POST", body: "{}" }),
+    call(`/admin/reports/${id}/verify`, () => ({ status: "ok", report_id: id, new_status: "verified" }), { method: "POST", body: "{}", headers: adminHeaders() }),
 
   rejectReport: (id: string) =>
-    call(`/admin/reports/${id}/reject`, () => ({ status: "ok", report_id: id, new_status: "rejected" }), { method: "POST", body: "{}" }),
+    call(`/admin/reports/${id}/reject`, () => ({ status: "ok", report_id: id, new_status: "rejected" }), { method: "POST", body: "{}", headers: adminHeaders() }),
 
   markDuplicate: (id: string) =>
-    call(`/admin/reports/${id}/duplicate`, () => ({ status: "ok", report_id: id, new_status: "duplicate" }), { method: "POST", body: "{}" }),
+    call(`/admin/reports/${id}/duplicate`, () => ({ status: "ok", report_id: id, new_status: "duplicate" }), { method: "POST", body: "{}", headers: adminHeaders() }),
 
   markFalsePositive: (id: string) =>
-    call(`/admin/reports/${id}/false-positive`, () => mock.mockForgetAck("false_positive"), { method: "POST", body: "{}" }),
+    call(`/admin/reports/${id}/false-positive`, () => mock.mockForgetAck("false_positive"), { method: "POST", body: "{}", headers: adminHeaders() }),
 
   stats: () => call<Stats>("/stats", () => mock.mockStats()),
 

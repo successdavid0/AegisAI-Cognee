@@ -15,10 +15,12 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from config import settings
 from database import SessionLocal, init_db
+from ratelimit import limiter
 from routes import (
     admin_routes, graph_routes, memory_routes, report_routes, scan_routes, stats_routes,
 )
@@ -49,16 +51,28 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Rate limiting (slowapi) — the limiter is shared with the /scan + /report routes.
+app.state.limiter = limiter
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.origins,
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,  # app uses no cookies; safer with restricted origins
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 
 # ---- JSON-only error contract (Backend Spec §11) ----
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_error(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"error": True, "message": "Too many requests. Please slow down.", "details": None},
+    )
+
+
+
 @app.exception_handler(StarletteHTTPException)
 async def http_error(request: Request, exc: StarletteHTTPException):
     return JSONResponse(
