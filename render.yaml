@@ -1,33 +1,28 @@
 # Render Blueprint for the AEGIS backend (FastAPI + SQLite + Cognee cloud).
 # Deploy: push this repo to GitHub, then Render → New → Blueprint → pick this repo.
 #
-# NOTE ON THE DISK: SQLite needs a persistent disk to survive redeploys. Render
-# disks require a paid instance type (Free instances have NO persistent disk).
-# - For a durable deploy: keep the `disk:` block + a paid `plan` (starter shown).
-# - For a throwaway demo on Free: delete the `disk:` block, set plan: free, and
-#   change DATABASE_URL to sqlite:///./sentinelgraph.db (data resets on redeploy;
-#   the demo seed reloads on startup, and Cognee still holds the full mirror).
+# FREE-TIER config: no persistent disk (Free instances don't support disks), so
+# the SQLite DB lives in the container's ephemeral filesystem and RESETS on every
+# redeploy/restart. That's fine here — the demo world reloads on startup via
+# load_seed(), and Cognee holds the full data mirror. To make data durable later,
+# switch `plan` to `starter`, add a `disk:` mounted at /data, and set
+# DATABASE_URL=sqlite:////data/sentinelgraph.db.
 services:
   - type: web
     name: aegis-backend
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    plan: starter
+    plan: free
     region: oregon
     healthCheckPath: /health
     autoDeploy: true
-    disk:
-      name: aegis-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: APP_ENV
         value: production
-      # Store the SQLite file on the persistent disk mounted at /data.
-      # (Four slashes = absolute path: sqlite://// + /data/...)
+      # Ephemeral SQLite in the container working dir (resets on redeploy).
       - key: DATABASE_URL
-        value: sqlite:////data/sentinelgraph.db
+        value: sqlite:///./sentinelgraph.db
       # Comma-separated allowed frontend origins (set to your Vercel URL,
       # e.g. https://aegis.vercel.app — no trailing slash).
       - key: CORS_ORIGINS
