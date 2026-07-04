@@ -5,11 +5,19 @@ in a graceful local-simulation mode so the product still works end to end.
 """
 from __future__ import annotations
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    # Secrets pasted into dashboards / .env files often pick up a trailing
+    # newline, which then poisons HTTP headers ("Illegal header value b'…\n'").
+    @field_validator("*", mode="before")
+    @classmethod
+    def _strip_whitespace(cls, v):
+        return v.strip() if isinstance(v, str) else v
 
     app_env: str = "development"
     database_url: str = "sqlite:///./sentinelgraph.db"
