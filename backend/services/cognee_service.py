@@ -43,6 +43,21 @@ def _headers() -> dict:
     return {"X-Api-Key": settings.cognee_api_key}
 
 
+def _describe(exc: Exception) -> str:
+    """Error string including the HTTP response body — the body says *why*
+    (invalid key, unknown dataset, rate limit…), which the status code alone
+    doesn't."""
+    if isinstance(exc, httpx.HTTPStatusError):
+        return f"HTTP {exc.response.status_code}: {exc.response.text[:300]}"
+    return f"{type(exc).__name__}: {exc}"
+
+
+def key_fingerprint() -> str:
+    """Safe-to-log description of the configured API key (never the key itself)."""
+    k = settings.cognee_api_key
+    return f"set ({len(k)} chars, …{k[-4:]})" if k else "MISSING"
+
+
 async def ping() -> dict:
     """Live reachability check against the Cognee cloud (for the status page).
 
@@ -61,7 +76,8 @@ async def ping() -> dict:
             "status_code": resp.status_code,
         }
     except Exception as exc:  # noqa: BLE001 — status check must never raise
-        return {"reachable": False, "error": str(exc)}
+        log.warning("Cognee ping failed (%s): %s", settings.cognee_base_url, _describe(exc))
+        return {"reachable": False, "error": _describe(exc)}
 
 
 async def dataset_info(dataset: str = DATASET) -> dict:
@@ -74,10 +90,10 @@ async def dataset_info(dataset: str = DATASET) -> dict:
         return {"records": None, "processing_status": None}
     base = settings.cognee_base_url.rstrip("/")
     try:
-        async with httpx.AsyncClient(
-            timeout=15, headers=_headers(), follow_redirects=True
-        ) as client:
-            resp = await client.get(f"{base}/api/v1/datasets")
+        async with httpx.AsyncClient(timeout=15, headers=_headers()) as client:
+            # Trailing slash matters: without it the server 307-redirects to a
+            # plain-http URL, which would resend the API key unencrypted.
+            resp = await client.get(f"{base}/api/v1/datasets/")
             resp.raise_for_status()
             ds = next((d for d in resp.json() if d.get("name") == dataset), None)
             if ds is None:
@@ -89,13 +105,15 @@ async def dataset_info(dataset: str = DATASET) -> dict:
             proc = (
                 status_resp.json().get(str(ds["id"])) if status_resp.status_code == 200 else None
             )
-            return {
-                "records": len(items) if isinstance(items, list) else None,
-                "processing_status": proc,
-            }
+            records = len(items) if isinstance(items, list) else None
+            log.info(
+                "Cognee dataset '%s': %s records (processing status: %s)",
+                dataset, records, proc,
+            )
+            return {"records": records, "processing_status": proc}
     except Exception as exc:  # noqa: BLE001 — status check must never raise
-        log.warning("Cognee dataset_info failed: %s", exc)
-        return {"records": None, "processing_status": None, "error": str(exc)}
+        log.warning("Cognee dataset_info failed for '%s': %s", dataset, _describe(exc))
+        return {"records": None, "processing_status": None, "error": _describe(exc)}
 
 
 async def _remember_text(text: str, node_set: str, dataset: str = DATASET) -> dict:
@@ -116,8 +134,8 @@ async def _remember_text(text: str, node_set: str, dataset: str = DATASET) -> di
             body = resp.json() if resp.content else {}
             return {"ok": True, "mode": "cloud", "data": body}
     except Exception as exc:  # noqa: BLE001 — must never break the request
-        log.warning("Cognee remember failed: %s", exc)
-        return {"ok": False, "mode": "cloud", "error": str(exc)}
+        log.warning("Cognee remember failed (node_set=%s): %s", node_set, _describe(exc))
+        return {"ok": False, "mode": "cloud", "error": _describe(exc)}
 
 
 # ---- Public wrapper API (Backend Spec §9) ----
@@ -149,8 +167,8 @@ async def recall_memory(query: str, dataset: str = DATASET) -> dict:
             return {"ok": True, "mode": "cloud", "results": results}
     except Exception as exc:  # noqa: BLE001
         # A fresh dataset returns 409 until cognify completes — expected, non-fatal.
-        log.info("Cognee recall unavailable (%s)", exc)
-        return {"ok": False, "mode": "cloud", "error": str(exc), "results": []}
+        log.warning("Cognee recall failed (query=%r): %s", query[:80], _describe(exc))
+        return {"ok": False, "mode": "cloud", "error": _describe(exc), "results": []}
 
 
 async def improve_memory(dataset: str = DATASET) -> dict:

@@ -39,7 +39,40 @@ async def lifespan(app: FastAPI):
         load_seed(db)
     finally:
         db.close()
-    log.info("AEGIS backend ready. Cognee: %s", cognee_service.status())
+
+    # Startup self-check — lands in the deploy logs so a misconfigured
+    # environment (missing/mispasted secrets, wrong tenant URL) is visible
+    # immediately, not only when a user hits the status page.
+    log.info(
+        "AEGIS backend starting: env=%s db=%s cors_origins=%s",
+        settings.app_env, settings.database_url.split(":", 1)[0], settings.origins,
+    )
+    cog = cognee_service.status()
+    log.info(
+        "Cognee config: enabled=%s mode=%s dataset=%s base_url=%s api_key=%s",
+        cog["enabled"], cog["mode"], cog["dataset"], cog["base_url"],
+        cognee_service.key_fingerprint(),
+    )
+    if cog["enabled"]:
+        ping = await cognee_service.ping()
+        info = await cognee_service.dataset_info()
+        if ping.get("reachable") and info.get("records") is not None:
+            log.info(
+                "Cognee LIVE: %s records in '%s' (latency %s ms, processing %s)",
+                info["records"], cog["dataset"], ping.get("latency_ms"),
+                info.get("processing_status"),
+            )
+        else:
+            log.error(
+                "Cognee NOT reachable from this deployment: ping=%s dataset_info=%s",
+                ping, info,
+            )
+    else:
+        log.warning(
+            "Cognee DISABLED (local-simulation): set COGNEE_BASE_URL and "
+            "COGNEE_API_KEY to connect the real memory base."
+        )
+    log.info("AEGIS backend ready.")
     yield
 
 
