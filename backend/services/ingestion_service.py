@@ -45,9 +45,92 @@ _LABEL = {"critical": "Critical", "high": "High Risk", "suspicious": "Suspicious
 _LABEL_SCORE = {"critical": 10, "high": 30, "suspicious": 55, "low": 90}  # safety scores
 
 
+SNAPSHOT = DATA / "db_snapshot.json"
+
+
 def _load(name: str) -> list[dict]:
     path = DATA / name
     return json.loads(path.read_text()) if path.exists() else []
+
+
+def _parse_dt(value: str | None) -> datetime | None:
+    return datetime.fromisoformat(value) if value else None
+
+
+def load_snapshot(db: Session) -> dict:
+    """Load the exported threat-intel snapshot (scripts/export_snapshot.py).
+
+    Production SQLite is ephemeral, so the full locally-built dataset ships in
+    the repo and is reloaded here on every boot. Idempotent by entity value:
+    entities that already exist (demo seed, earlier runs) are left untouched
+    and their snapshot reports/relationships skipped.
+    """
+    if not SNAPSHOT.exists():
+        return {"entities": 0, "reports": 0, "relationships": 0}
+    snap = json.loads(SNAPSHOT.read_text())
+
+    existing = {v: i for i, v in db.execute(select(models.Entity.id, models.Entity.value))}
+    clusters = {c for (c,) in db.execute(select(models.Cluster.id))}
+    sources = {s for (s,) in db.execute(select(models.Source.id))}
+    counts = {"entities": 0, "reports": 0, "relationships": 0}
+
+    new_values: set[str] = set()
+    for e in snap.get("entities", []):
+        if e["value"] in existing:
+            continue
+        eid = new_id("ent")
+        db.add(models.Entity(
+            id=eid,
+            entity_type=e["entity_type"],
+            value=e["value"],
+            chain=e.get("chain"),
+            status=e.get("status", "verified"),
+            risk_label=e.get("risk_label", "Unknown"),
+            risk_score=e.get("risk_score"),
+            confidence=e.get("confidence"),
+            cluster_id=e.get("cluster_id") if e.get("cluster_id") in clusters else None,
+            first_seen=_parse_dt(e.get("first_seen")) or _now(),
+            last_seen=_parse_dt(e.get("last_seen")) or _now(),
+        ))
+        existing[e["value"]] = eid
+        new_values.add(e["value"])
+        counts["entities"] += 1
+    db.flush()
+
+    for r in snap.get("reports", []):
+        if r["entity_value"] not in new_values:
+            continue
+        src = r.get("source_id")
+        db.add(models.Report(
+            id=new_id("rpt"),
+            entity_id=existing[r["entity_value"]],
+            source_id=src if src in sources else "community",
+            scam_type=r.get("scam_type", "other"),
+            description=r.get("description", ""),
+            evidence=r.get("evidence"),
+            confidence=r.get("confidence", 0.6),
+            status=r.get("status", "pending"),
+            reporter=r.get("reporter"),
+            created_at=_parse_dt(r.get("created_at")) or _now(),
+        ))
+        counts["reports"] += 1
+
+    for rel in snap.get("relationships", []):
+        a, b = existing.get(rel["from_value"]), existing.get(rel["to_value"])
+        if not a or not b:
+            continue
+        if rel["from_value"] not in new_values and rel["to_value"] not in new_values:
+            continue  # both endpoints pre-existed — relationship came from seed
+        db.add(models.Relationship(
+            from_entity_id=a, to_entity_id=b,
+            relationship_type=rel.get("relationship_type", "related"),
+            confidence=rel.get("confidence", 0.5),
+            evidence=rel.get("evidence"),
+        ))
+        counts["relationships"] += 1
+
+    db.commit()
+    return counts
 
 
 def _now(offset_min: int = 0) -> datetime:

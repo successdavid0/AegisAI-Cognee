@@ -25,7 +25,7 @@ from routes import (
     admin_routes, graph_routes, memory_routes, report_routes, scan_routes, stats_routes,
 )
 from services import cognee_service
-from services.ingestion_service import load_seed
+from services.ingestion_service import load_seed, load_snapshot
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("sentinelgraph")
@@ -37,6 +37,12 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         load_seed(db)
+        loaded = load_snapshot(db)
+        if any(loaded.values()):
+            log.info(
+                "Threat-intel snapshot loaded: +%s entities, +%s reports, +%s relationships",
+                loaded["entities"], loaded["reports"], loaded["relationships"],
+            )
     finally:
         db.close()
 
