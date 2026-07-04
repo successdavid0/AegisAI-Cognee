@@ -4,7 +4,7 @@
 // data, returning { data, live } so the UI can badge the source.
 import type {
   ApiResult, EntityDetail, GraphData, Lifecycle, RecentScan, Report,
-  ReportPayload, ScanResult, Stats,
+  ReportPayload, ScanResult, Stats, SystemStatus,
 } from "./types";
 import * as mock from "./mock";
 
@@ -97,6 +97,8 @@ export const api = {
     call(`/admin/reports/${id}/false-positive`, () => mock.mockForgetAck("false_positive"), { method: "POST", body: "{}", headers: adminHeaders() }),
 
   stats: () => call<Stats>("/stats", () => mock.mockStats()),
+
+  status: () => call<SystemStatus>("/status", () => mock.mockStatus()),
 
   recentScans: () => call<RecentScan[]>("/scans/recent", () => mock.mockRecentScans()),
 

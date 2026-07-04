@@ -17,6 +17,7 @@ import type {
   ScanResult,
   Stats,
   RecentScan,
+  SystemStatus,
 } from "./types";
 import { labelForScore } from "./risk";
 
@@ -214,6 +215,17 @@ export function mockGraph(value: string, depth = 1): GraphData {
 
 export function mockStats(): Stats {
   return { total_scans: 1284, total_reports: 213, verified_scams: 96, pending_reports: 41, false_positives_corrected: 12, scam_clusters: 7, memory_events: 3120 };
+}
+
+// Returned when the backend is unreachable (or mock-only): everything offline,
+// so the System Status page renders red for the live services.
+export function mockStatus(): SystemStatus {
+  return {
+    api: { ok: false, version: "—", env: "demo" },
+    database: { connected: false },
+    cognee: { enabled: false, mode: "offline", dataset: "—", base_url: null, reachable: false },
+    admin_auth_ready: false,
+  };
 }
 
 export function mockRecentScans(): RecentScan[] {

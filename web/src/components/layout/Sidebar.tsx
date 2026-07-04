@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Radar, Share2, FileWarning, BrainCircuit,
-  ShieldCheck, Fingerprint, ShieldHalf,
+  ShieldCheck, Fingerprint, ShieldHalf, Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/memory", label: "Memory Lifecycle", icon: BrainCircuit },
   { href: "/admin", label: "Admin Review", icon: ShieldCheck },
   { href: "/entity", label: "Entity Lookup", icon: Fingerprint },
+  { href: "/settings", label: "System Status", icon: Activity },
 ];
 
 export function Sidebar() {

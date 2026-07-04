@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
+from config import settings
 from database import get_db
+from services import cognee_service
 from services.common import iso, memory_event_out, related_entities, report_out
 from services.entity_extractor import detect_entity_type, normalize_entity
 
@@ -19,6 +21,33 @@ def _count(db: Session, model, *where) -> int:
     for w in where:
         stmt = stmt.where(w)
     return db.scalar(stmt) or 0
+
+
+@router.get("/status", tags=["meta"])
+async def system_status(db: Session = Depends(get_db)):
+    """Full connectivity report for the System Status page: API, DB, Cognee."""
+    # Database — a real query proves the connection works.
+    try:
+        database = {
+            "connected": True,
+            "engine": settings.database_url.split(":", 1)[0],
+            "entities": _count(db, models.Entity),
+            "reports": _count(db, models.Report),
+            "clusters": _count(db, models.Cluster),
+        }
+    except Exception as exc:  # noqa: BLE001
+        database = {"connected": False, "error": str(exc)}
+
+    # Cognee — config + a live reachability ping.
+    cognee = {**cognee_service.status(), **(await cognee_service.ping())}
+
+    return {
+        "api": {"ok": True, "version": "1.0.0", "env": settings.app_env},
+        "database": database,
+        "cognee": cognee,
+        # Admin surface protected? (key set, or dev where it's intentionally open)
+        "admin_auth_ready": bool(settings.admin_api_key) or not settings.is_production,
+    }
 
 
 @router.get("/stats", response_model=schemas.Stats)

@@ -146,6 +146,30 @@ export interface ReportPayload {
   reporter?: string | null;
 }
 
+// System Status page — connectivity report from GET /status.
+export interface SystemStatus {
+  api: { ok: boolean; version: string; env: string };
+  database: {
+    connected: boolean;
+    engine?: string;
+    entities?: number;
+    reports?: number;
+    clusters?: number;
+    error?: string;
+  };
+  cognee: {
+    enabled: boolean;
+    mode: string;
+    dataset: string;
+    base_url: string | null;
+    reachable: boolean;
+    latency_ms?: number;
+    status_code?: number;
+    error?: string;
+  };
+  admin_auth_ready: boolean;
+}
+
 // Wraps a response with provenance so the UI can show LIVE vs DEMO data.
 export interface ApiResult<T> {
   data: T;

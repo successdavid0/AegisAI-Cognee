@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 
 import httpx
 
@@ -40,6 +41,27 @@ def status() -> dict:
 def _headers() -> dict:
     # Cognee cloud authenticates with X-Api-Key only.
     return {"X-Api-Key": settings.cognee_api_key}
+
+
+async def ping() -> dict:
+    """Live reachability check against the Cognee cloud (for the status page).
+
+    Any HTTP response from the host counts as reachable; only connection/DNS/
+    timeout errors mean unreachable. Non-fatal — never raises.
+    """
+    if not settings.cognee_enabled:
+        return {"reachable": False, "error": "not configured"}
+    start = time.perf_counter()
+    try:
+        async with httpx.AsyncClient(timeout=8, follow_redirects=True) as client:
+            resp = await client.get(settings.cognee_base_url, headers=_headers())
+        return {
+            "reachable": True,
+            "latency_ms": round((time.perf_counter() - start) * 1000),
+            "status_code": resp.status_code,
+        }
+    except Exception as exc:  # noqa: BLE001 — status check must never raise
+        return {"reachable": False, "error": str(exc)}
 
 
 async def _remember_text(text: str, node_set: str, dataset: str = DATASET) -> dict:
