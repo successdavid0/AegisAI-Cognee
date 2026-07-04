@@ -102,6 +102,7 @@ matter of matching these payloads (or adjusting both in lockstep) and setting
 
 ## Verified
 
-- `npm run build` passes (10 routes, TypeScript clean).
-- `npx eslint` clean.
-- Dev server serves every route `200` with expected content and zero runtime errors.
+- ✅ `npm run build` passes (10 routes, TypeScript clean).
+- ✅ `npx eslint` clean.
+- ✅ Dev server serves every route `200` with expected content and zero runtime errors.
+- ✅ Runs live against the FastAPI backend (CORS verified).

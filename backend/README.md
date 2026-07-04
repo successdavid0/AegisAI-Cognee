@@ -105,8 +105,9 @@ backend/
 
 ## Verified
 
-- Seeds on startup with no errors; `/health` returns `ok`.
-- 21-point contract check passes: every endpoint returns the exact shape the
+- ✅ Seeds on startup with no errors; `/health` returns `ok`.
+- ✅ 21-point contract check passes: every endpoint returns the exact shape the
   frontend expects (reasons `{text,weight}`, graph edges with `from` alias,
   cluster node, OpAck `events`, entity-type detection, etc.).
-- CORS allows the Next.js origin; frontend runs live against it.
+- ✅ CORS allows the Next.js origin; frontend runs live against it.
+- ✅ Real Cognee cloud calls succeed (`/api/v1/remember` + `/api/v1/recall` → 200).
