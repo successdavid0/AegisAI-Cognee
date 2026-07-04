@@ -41,7 +41,10 @@ async function call<T>(
     const res = await fetch(`${BASE}${path}`, {
       ...init,
       headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
-      signal: AbortSignal.timeout(8000),
+      // Generous timeout so a cold-starting free-tier backend (Render spins down
+      // after ~15 min idle and takes 30–60s to wake) still connects live instead
+      // of falling back to demo data.
+      signal: AbortSignal.timeout(45000),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return { data: (await res.json()) as T, live: true };
