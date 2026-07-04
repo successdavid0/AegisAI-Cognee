@@ -9,8 +9,11 @@ import type {
 import * as mock from "./mock";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// Live by default: the app always tries the real backend and only falls back to
+// seeded demo data if a request fails (or if mock mode is explicitly forced).
+// Set NEXT_PUBLIC_MOCK_ONLY=true to force offline/demo mode.
 const MOCK_ONLY =
-  (process.env.NEXT_PUBLIC_MOCK_ONLY ?? "true").toLowerCase() !== "false";
+  (process.env.NEXT_PUBLIC_MOCK_ONLY ?? "false").toLowerCase() === "true";
 
 // Admin key for state-mutating admin/memory routes. Kept in sessionStorage and
 // entered at runtime on the Admin page — never baked into the JS bundle, so it
