@@ -64,6 +64,40 @@ async def ping() -> dict:
         return {"reachable": False, "error": str(exc)}
 
 
+async def dataset_info(dataset: str = DATASET) -> dict:
+    """Record count + processing state for the configured dataset (status page).
+
+    Proves the data in Cognee cloud is actually reachable from this deployment,
+    not just that the host answers. Non-fatal — never raises.
+    """
+    if not settings.cognee_enabled:
+        return {"records": None, "processing_status": None}
+    base = settings.cognee_base_url.rstrip("/")
+    try:
+        async with httpx.AsyncClient(
+            timeout=15, headers=_headers(), follow_redirects=True
+        ) as client:
+            resp = await client.get(f"{base}/api/v1/datasets")
+            resp.raise_for_status()
+            ds = next((d for d in resp.json() if d.get("name") == dataset), None)
+            if ds is None:
+                return {"records": 0, "processing_status": "DATASET_NOT_FOUND"}
+            data_resp = await client.get(f"{base}/api/v1/datasets/{ds['id']}/data")
+            data_resp.raise_for_status()
+            items = data_resp.json()
+            status_resp = await client.get(f"{base}/api/v1/datasets/status")
+            proc = (
+                status_resp.json().get(str(ds["id"])) if status_resp.status_code == 200 else None
+            )
+            return {
+                "records": len(items) if isinstance(items, list) else None,
+                "processing_status": proc,
+            }
+    except Exception as exc:  # noqa: BLE001 — status check must never raise
+        log.warning("Cognee dataset_info failed: %s", exc)
+        return {"records": None, "processing_status": None, "error": str(exc)}
+
+
 async def _remember_text(text: str, node_set: str, dataset: str = DATASET) -> dict:
     """POST a natural-language memory to /api/v1/remember (multipart)."""
     if not settings.cognee_enabled:

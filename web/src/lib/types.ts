@@ -165,6 +165,8 @@ export interface SystemStatus {
     reachable: boolean;
     latency_ms?: number;
     status_code?: number;
+    records?: number | null;
+    processing_status?: string | null;
     error?: string;
   };
   admin_auth_ready: boolean;

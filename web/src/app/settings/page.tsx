@@ -127,6 +127,12 @@ export default function SettingsPage() {
                 ? [
                     ["Mode", c.mode],
                     ["Dataset", c.dataset],
+                    [
+                      "Records",
+                      c.records != null
+                        ? `${c.records.toLocaleString()} memories${c.processing_status === "DATASET_PROCESSING_STARTED" ? " · cognify in progress" : ""}`
+                        : "count unavailable",
+                    ],
                     ["Latency", `${c.latency_ms ?? "?"} ms`],
                     ["Host", c.base_url ?? "—"],
                   ]

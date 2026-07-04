@@ -38,8 +38,12 @@ async def system_status(db: Session = Depends(get_db)):
     except Exception as exc:  # noqa: BLE001
         database = {"connected": False, "error": str(exc)}
 
-    # Cognee — config + a live reachability ping.
-    cognee = {**cognee_service.status(), **(await cognee_service.ping())}
+    # Cognee — config + a live reachability ping + record count in the dataset.
+    cognee = {
+        **cognee_service.status(),
+        **(await cognee_service.ping()),
+        **(await cognee_service.dataset_info()),
+    }
 
     return {
         "api": {"ok": True, "version": "1.0.0", "env": settings.app_env},
