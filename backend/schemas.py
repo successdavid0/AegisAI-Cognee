@@ -152,6 +152,29 @@ class RecentScan(BaseModel):
     timestamp: str
 
 
+# ---------- Threat database browser ----------
+class EntityListItem(BaseModel):
+    id: str
+    type: str
+    value: str
+    chain: str | None = None
+    status: str | None = None
+    risk_label: str
+    risk_score: int | None = None
+    confidence: float | None = None
+    report_count: int
+    scam_type: str | None = None
+    first_seen: str | None = None
+    last_seen: str | None = None
+
+
+class EntityListPage(BaseModel):
+    items: list[EntityListItem]
+    total: int
+    page: int
+    page_size: int
+
+
 class EntityDetail(BaseModel):
     id: str
     type: str

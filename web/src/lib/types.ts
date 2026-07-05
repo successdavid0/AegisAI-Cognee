@@ -172,6 +172,40 @@ export interface SystemStatus {
   admin_auth_ready: boolean;
 }
 
+// Threat Database browser — one row per entity from GET /entities.
+export interface EntityListItem {
+  id: string;
+  type: string;
+  value: string;
+  chain: string | null;
+  status: string | null;
+  risk_label: RiskLabel;
+  risk_score: number | null;
+  confidence: number | null;
+  report_count: number;
+  scam_type: string | null;
+  first_seen: string | null;
+  last_seen: string | null;
+}
+
+export interface EntityListPage {
+  items: EntityListItem[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export interface EntityListQuery {
+  q?: string;
+  type?: string;
+  risk?: string;
+  status?: string;
+  sort?: "risk" | "reports" | "recent" | "value";
+  order?: "asc" | "desc";
+  page?: number;
+  page_size?: number;
+}
+
 // Wraps a response with provenance so the UI can show LIVE vs DEMO data.
 export interface ApiResult<T> {
   data: T;

@@ -3,8 +3,8 @@
 // (or NEXT_PUBLIC_MOCK_ONLY is set) it transparently falls back to seeded demo
 // data, returning { data, live } so the UI can badge the source.
 import type {
-  ApiResult, EntityDetail, GraphData, Lifecycle, RecentScan, Report,
-  ReportPayload, ScanResult, Stats, SystemStatus,
+  ApiResult, EntityDetail, EntityListPage, EntityListQuery, GraphData,
+  Lifecycle, RecentScan, Report, ReportPayload, ScanResult, Stats, SystemStatus,
 } from "./types";
 import * as mock from "./mock";
 
@@ -112,4 +112,15 @@ export const api = {
 
   entity: (value: string) =>
     call<EntityDetail>(`/entity/${encodeURIComponent(value)}`, () => mock.mockEntity(value)),
+
+  entityList: (query: EntityListQuery = {}) => {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (v !== undefined && v !== "") params.set(k, String(v));
+    }
+    const qs = params.toString();
+    return call<EntityListPage>(`/entities${qs ? `?${qs}` : ""}`, () =>
+      mock.mockEntityList(query),
+    );
+  },
 };

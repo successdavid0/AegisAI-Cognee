@@ -67,6 +67,93 @@ def stats(db: Session = Depends(get_db)):
     )
 
 
+_ENTITY_SORTS = {"risk", "reports", "recent", "value"}
+
+
+@router.get("/entities", response_model=schemas.EntityListPage)
+def list_entities(
+    q: str = "",
+    type: str = "",
+    risk: str = "",
+    status: str = "",
+    sort: str = "risk",
+    order: str = "",
+    page: int = 1,
+    page_size: int = 50,
+    db: Session = Depends(get_db),
+):
+    """Browse every entity in the database with search/filter/sort/pagination.
+
+    Default sort is most threatening first (risk_score is a SAFETY score, so
+    ascending = most dangerous at the top).
+    """
+    page = max(page, 1)
+    page_size = min(max(page_size, 1), 200)
+    if sort not in _ENTITY_SORTS:
+        sort = "risk"
+
+    report_count = (
+        select(func.count(models.Report.id))
+        .where(models.Report.entity_id == models.Entity.id)
+        .correlate(models.Entity)
+        .scalar_subquery()
+    )
+    # Representative scam type: the entity's most recent report.
+    scam_type = (
+        select(models.Report.scam_type)
+        .where(models.Report.entity_id == models.Entity.id)
+        .order_by(models.Report.created_at.desc())
+        .limit(1)
+        .correlate(models.Entity)
+        .scalar_subquery()
+    )
+
+    filters = []
+    if q.strip():
+        filters.append(models.Entity.value.ilike(f"%{q.strip()}%"))
+    if type:
+        filters.append(models.Entity.entity_type == type)
+    if risk:
+        filters.append(models.Entity.risk_label == risk)
+    if status:
+        filters.append(models.Entity.status == status)
+
+    total = db.scalar(
+        select(func.count()).select_from(models.Entity).where(*filters)
+    ) or 0
+
+    stmt = select(models.Entity, report_count.label("rc"), scam_type.label("st")).where(*filters)
+    if sort == "risk":
+        col = models.Entity.risk_score.desc() if order == "desc" else models.Entity.risk_score.asc()
+        stmt = stmt.order_by(col.nullslast(), models.Entity.value)
+    elif sort == "reports":
+        stmt = stmt.order_by(report_count.asc() if order == "asc" else report_count.desc())
+    elif sort == "recent":
+        stmt = stmt.order_by(
+            models.Entity.last_seen.asc() if order == "asc" else models.Entity.last_seen.desc()
+        )
+    else:  # value
+        stmt = stmt.order_by(
+            models.Entity.value.desc() if order == "desc" else models.Entity.value.asc()
+        )
+    rows = db.execute(stmt.offset((page - 1) * page_size).limit(page_size)).all()
+
+    return schemas.EntityListPage(
+        items=[
+            schemas.EntityListItem(
+                id=e.id, type=e.entity_type, value=e.value, chain=e.chain,
+                status=e.status, risk_label=e.risk_label, risk_score=e.risk_score,
+                confidence=e.confidence, report_count=rc or 0, scam_type=st,
+                first_seen=iso(e.first_seen), last_seen=iso(e.last_seen),
+            )
+            for e, rc, st in rows
+        ],
+        total=total,
+        page=page,
+        page_size=page_size,
+    )
+
+
 @router.get("/entity/{value:path}", response_model=schemas.EntityDetail)
 def entity_detail(value: str, db: Session = Depends(get_db)):
     etype = detect_entity_type(value)

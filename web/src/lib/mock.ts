@@ -5,6 +5,9 @@
 import type {
   EntityType,
   EntityDetail,
+  EntityListItem,
+  EntityListPage,
+  EntityListQuery,
   Evidence,
   GraphData,
   Lifecycle,
@@ -264,6 +267,32 @@ export function mockEntity(value: string): EntityDetail {
     memory_events: mockLifecycle(sid("scan", v), e.value, true).events,
     scans: mockRecentScans().filter((s) => s.input_value === v),
   };
+}
+
+export function mockEntityList(query: EntityListQuery = {}): EntityListPage {
+  let items: EntityListItem[] = Object.values(ENTITIES).map((e) => ({
+    id: e.id,
+    type: e.type,
+    value: e.value,
+    chain: e.chain,
+    status: e.status,
+    risk_label: e.risk_label,
+    risk_score: e.risk_score,
+    confidence: e.confidence,
+    report_count: e.risk_label === "Critical" ? 3 : 1,
+    scam_type: e.type === "handle" ? "Impersonation" : "Phishing",
+    first_seen: e.first_seen,
+    last_seen: nowIso(120),
+  }));
+  const q = (query.q ?? "").toLowerCase();
+  if (q) items = items.filter((i) => i.value.toLowerCase().includes(q));
+  if (query.type) items = items.filter((i) => i.type === query.type);
+  if (query.risk) items = items.filter((i) => i.risk_label === query.risk);
+  if (query.status) items = items.filter((i) => i.status === query.status);
+  items.sort((a, b) => (a.risk_score ?? 100) - (b.risk_score ?? 100));
+  if (query.sort === "reports") items.sort((a, b) => b.report_count - a.report_count);
+  if (query.sort === "value") items.sort((a, b) => a.value.localeCompare(b.value));
+  return { items, total: items.length, page: 1, page_size: query.page_size ?? 50 };
 }
 
 export function mockReportAck(payload: ReportPayload) {

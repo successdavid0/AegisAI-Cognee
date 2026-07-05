@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Radar, Share2, FileWarning, BrainCircuit,
-  ShieldCheck, Fingerprint, ShieldHalf, Activity,
+  ShieldCheck, Fingerprint, ShieldHalf, Activity, Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,7 @@ const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/scan", label: "Scan", icon: Radar },
   { href: "/graph", label: "Threat Graph", icon: Share2 },
+  { href: "/database", label: "Threat Database", icon: Database },
   { href: "/report", label: "Report Scam", icon: FileWarning },
   { href: "/memory", label: "Memory Lifecycle", icon: BrainCircuit },
   { href: "/admin", label: "Admin Review", icon: ShieldCheck },
